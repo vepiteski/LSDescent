@@ -1,6 +1,6 @@
-export Newlbfgs
+export steepest
 
-function Newlbfgs(nlp :: AbstractNLPModel;
+function steepest(nlp :: AbstractNLPModel;
                atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
                max_eval :: Int=0,
                verbose :: Bool=true,
@@ -16,7 +16,6 @@ function Newlbfgs(nlp :: AbstractNLPModel;
 
   f = obj(nlp, x)
   ∇f = grad(nlp, x)
-  H = InverseLBFGSOperator(n, mem, scaling=true)
 
   ∇fNorm = BLAS.nrm2(n, ∇f, 1)
   ϵ = atol + rtol * ∇fNorm
@@ -30,7 +29,7 @@ function Newlbfgs(nlp :: AbstractNLPModel;
   tired = nlp.counters.neval_obj + nlp.counters.neval_grad > max_eval
 
   while !(optimal || tired)
-    d = - H * ∇f
+    d = - ∇f
     slope = BLAS.dot(n, d, 1, ∇f, 1)
     slope < 0.0 || error("Not a descent direction! slope = ", slope)
 
@@ -38,16 +37,13 @@ function Newlbfgs(nlp :: AbstractNLPModel;
 
     # Perform improved Armijo linesearch.
     h = C1LineFunction(nlp, x, d)
-    t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=false)
+    t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=false; kwargs...)
 
     verbose && @printf("  %4d\n", nbk)
 
     BLAS.blascopy!(n, x, 1, xt, 1)
     BLAS.axpy!(n, t, d, 1, xt, 1)
     good_grad || (∇ft = grad!(nlp, xt, ∇ft))
-
-    # Update L-BFGS approximation.
-    push!(H, t * d, ∇ft - ∇f)
 
     # Move on.
     x = xt

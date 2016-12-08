@@ -8,6 +8,8 @@ using LinearOperators
 AbstractLineFunction = Union{C1LineFunction,C2LineFunction}
 
 include("lbfgs.jl")
+include("steepest.jl")
+include("CG_PR.jl")
 include("armijo_wolfe.jl")
 
 using LineSearch

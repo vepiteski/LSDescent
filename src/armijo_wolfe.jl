@@ -8,12 +8,13 @@ function Newarmijo_wolfe(h :: C1LineFunction,
                       τ₁ :: Float64=0.9999,
                       bk_max :: Int=10,
                       nbWM :: Int=5,
-                      verbose :: Bool=false)
+                      verbose :: Bool=false,
+                         kwargs...)
 
-  # Perform improved Armijo linesearch.
-  nbk = 0
-  nbW = 0
-  t = 1.0
+    # Perform improved Armijo linesearch.
+    nbk = 0
+    nbW = 0
+    t = 1.0
 
   # First try to increase t to satisfy loose Wolfe condition
   ht = obj(h, t)
