@@ -6,8 +6,8 @@ function Newarmijo_wolfe(h :: C1LineFunction,
                       g :: Array{Float64,1};
                       τ₀ :: Float64=1.0e-4,
                       τ₁ :: Float64=0.9999,
-                      bk_max :: Int=10,
-                      nbWM :: Int=5,
+                      bk_max :: Int=50,
+                      nbWM :: Int=50,
                       verbose :: Bool=false,
                          kwargs...)
 
@@ -22,8 +22,10 @@ function Newarmijo_wolfe(h :: C1LineFunction,
   while (slope_t < τ₁*slope) && (ht <= h₀ + τ₀ * t * slope) && (nbW < nbWM)
     t *= 5.0
     ht = obj(h, t)
-    slope_t = grad!(h, t, g)
+    slope_t = grad!(h, t, g)        #scale = (y⋅s) / (y⋅y)
+
     nbW += 1
+    verbose && @printf(" W  %4d  slope  %4d slopet %4d\n", nbW, slope, slope_t);
   end
 
   hgoal = h₀ + slope * t * τ₀;
@@ -52,6 +54,7 @@ function Newarmijo_wolfe(h :: C1LineFunction,
     end
 
     nbk += 1
+    verbose && @printf(" A  %4d  h0  %4e ht %4e\n", nbk, h₀, ht);
   end
 
   verbose && @printf("  %4d %4d\n", nbk, nbW);

@@ -1,6 +1,6 @@
-export CG_PR
+export Newton
 
-function CG_PR(nlp :: AbstractNLPModel;
+function Newton(nlp :: AbstractNLPModel;
                atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
                max_eval :: Int=0,
                verbose :: Bool=true,
@@ -16,6 +16,10 @@ function CG_PR(nlp :: AbstractNLPModel;
     
     f = obj(nlp, x)
     ∇f = grad(nlp, x)
+
+    H = hess(nlp,x)
+    tempH = (H+tril(H,-1)')
+    H = full(tempH)
     
     ∇fNorm = BLAS.nrm2(n, ∇f, 1)
     ϵ = atol + rtol * ∇fNorm
@@ -26,25 +30,27 @@ function CG_PR(nlp :: AbstractNLPModel;
     verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
     
     optimal = ∇fNorm <= ϵ
-    tired = nlp.counters.neval_obj + nlp.counters.neval_grad > max_eval
+    tired = nlp.counters.neval_obj + nlp.counters.neval_grad + nlp.counters.neval_hess > max_eval
     
     β = 0.0
     d = zeros(∇f)
     scale = 1.0
     
     while !(optimal || tired)
-        d = - ∇f + β*d
+        Δ, V = eig(H)
+        ϵ2 =  1.0e-5 
+        Γ = 1.0 ./ max(abs(Δ),ϵ2)
+        
+        d = - (V * diagm(Γ) * V') * (∇f)
         slope = BLAS.dot(n, d, 1, ∇f, 1)
-        if slope > 0.0  # restart with negative gradient
-            d = - ∇f
-        end
 
         verbose && @printf("  %8.1e", slope)
         
         # Perform improved Armijo linesearch.
-        h = C1LineFunction(nlp, x, d/scale)
+        h = C1LineFunction(nlp, x, d)
+
+
         t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=false; kwargs...)
-        t /= scale
         verbose && @printf("  %4d\n", nbk)
         
         BLAS.blascopy!(n, x, 1, xt, 1)
@@ -57,9 +63,13 @@ function CG_PR(nlp :: AbstractNLPModel;
         β = (∇ft⋅y) / (∇f⋅∇f)
         x = xt
         f = ft
+
+        H = hess(nlp,x)
+        tempH = (H+tril(H,-1)')
+        H = full(tempH)
+
         BLAS.blascopy!(n, ∇ft, 1, ∇f, 1)
 
-        #scale = (y⋅s) / (y⋅y)
         # norm(∇f) bug: https://github.com/JuliaLang/julia/issues/11788
         ∇fNorm = BLAS.nrm2(n, ∇f, 1)
         iter = iter + 1
@@ -67,7 +77,7 @@ function CG_PR(nlp :: AbstractNLPModel;
         verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
         
         optimal = ∇fNorm <= ϵ
-        tired = nlp.counters.neval_obj + nlp.counters.neval_grad > max_eval
+        tired = nlp.counters.neval_obj + nlp.counters.neval_grad + nlp.counters.neval_hess > max_eval
     end
     verbose && @printf("\n")
     
