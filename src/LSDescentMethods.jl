@@ -11,6 +11,9 @@ include("lbfgs.jl")
 include("steepest.jl")
 include("CG_PR.jl")
 include("NewtonSpectralAbs.jl")
+include("NewtonLDLtAbs.jl")
+using HSL
+include("NewtonMA57Abs.jl")
 include("armijo_wolfe.jl")
 
 using LineSearch

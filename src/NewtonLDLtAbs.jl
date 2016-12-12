@@ -1,16 +1,48 @@
-export Newton
+export NewtonLDLt
 
-function NwtdirectionSpectral(H,g)
-    Δ, V = eig(H)
-    ϵ2 =  1.0e-8 
-    Γ = 1.0 ./ max(abs(Δ),ϵ2)
+include("ldlt_symm.jl")
+
+function NwtdirectionLDLt(H,g)
+    L = Array(Float64,2)
+    D = Array(Float64,2)
+    pp = Array(Int,1)
+    ρ = Float64
+    ncomp = Int64
     
-    d = - (V * diagm(Γ) * V') * (g)
+    try
+        (L, D, pp, rho, ncomp) = ldlt_symm(H,'r')
+    catch
+ 	println("*******   Problem in LDLt")
+        res = PDataLDLt()
+        res.OK = false
+        return res
+    end
+
+    # A[pp,pp] = P*A*P' =  L*D*L'
+
+    if true in isnan(D) 
+ 	println("*******   Problem in D from LDLt: NaN")
+        println(" cond (H) = $(cond(H))")
+        res = PDataLDLt()
+        res.OK = false
+        return res
+    end
+
+    Δ, Q = eig(D)
+
+    ϵ2 =  1.0e-8
+    Γ = max(abs(Δ),ϵ2)
+
+    # Ad = P'*L*Q*Δ*Q'*L'*Pd =    -g
+    # replace Δ by Γ to ensure positive definiteness
+    d̃ = L\g[pp]
+    d̂ = L'\ (Q*(Q'*d̃ ./ Γ))
+    d = - d̂[invperm(pp)]
+
     return d
 end
 
-
-function Newton(nlp :: AbstractNLPModel;
+function NewtonLDLt(nlp :: AbstractNLPModel;
                atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
                max_eval :: Int=0,
                verbose :: Bool=true,
@@ -47,7 +79,7 @@ function Newton(nlp :: AbstractNLPModel;
     scale = 1.0
     
     while !(optimal || tired)
-        d = NwtdirectionSpectral(H,∇f)
+        d = NwtdirectionLDLt(H,∇f)
         slope = BLAS.dot(n, d, 1, ∇f, 1)
 
         verbose && @printf("  %8.1e", slope)
