@@ -9,7 +9,10 @@ AbstractLineFunction = Union{C1LineFunction,C2LineFunction}
 
 include("lbfgs.jl")
 include("steepest.jl")
+include("CG_FR.jl")
 include("CG_PR.jl")
+include("CG_HS.jl")
+include("CG_HZ.jl")
 include("NewtonSpectralAbs.jl")
 include("NewtonLDLtAbs.jl")
 using HSL

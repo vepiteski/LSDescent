@@ -136,8 +136,7 @@ function NewtonMA57(nlp :: AbstractNLPModel;
         f = ft
 
         H = hess(nlp,x)
-        tempH = (H+tril(H,-1)')
-        H = full(tempH)
+        H = (H+tril(H,-1)')
 
         BLAS.blascopy!(n, ∇ft, 1, ∇f, 1)
 
