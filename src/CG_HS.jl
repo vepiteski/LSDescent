@@ -37,6 +37,7 @@ function CG_HS(nlp :: AbstractNLPModel;
         slope = BLAS.dot(n, d, 1, ∇f, 1)
         if slope > 0.0  # restart with negative gradient
             d = - ∇f
+            slope = BLAS.dot(n, d, 1, ∇f, 1)
         end
 
         verbose && @printf("  %8.1e", slope)
