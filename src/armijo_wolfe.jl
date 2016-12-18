@@ -57,7 +57,7 @@ function Newarmijo_wolfe(h :: C1LineFunction,
     verbose && @printf(" A  %4d  h0  %4e ht %4e\n", nbk, h₀, ht);
   end
 
-  verbose && @printf("  %4d %4d\n", nbk, nbW);
+  verbose && @printf("  %4d %4d %8e\n", nbk, nbW, t);
 
   return (t, good_grad, ht, nbk, nbW)
 end

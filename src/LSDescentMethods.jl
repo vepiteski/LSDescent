@@ -9,6 +9,8 @@ AbstractLineFunction = Union{C1LineFunction,C2LineFunction}
 
 include("lbfgs.jl")
 include("steepest.jl")
+include("formulae.jl")
+include("CG_generic.jl")
 include("CG_FR.jl")
 include("CG_PR.jl")
 include("CG_HS.jl")
