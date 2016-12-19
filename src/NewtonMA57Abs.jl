@@ -77,12 +77,13 @@ function NwtdirectionMA57(H,g)
 end
 
 function NewtonMA57(nlp :: AbstractNLPModel;
-               atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
-               max_eval :: Int=0,
-               verbose :: Bool=true,
-               mem :: Int=5,
-               linesearch :: Function = Newarmijo_wolfe,
-               kwargs...)
+                    atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
+                    max_eval :: Int=0,
+                    verbose :: Bool=true,
+                    verboseLS :: Bool = true,
+                    mem :: Int=5,
+                    linesearch :: Function = Newarmijo_wolfe,
+                    kwargs...)
 
     x = copy(nlp.meta.x0)
     n = nlp.meta.nvar

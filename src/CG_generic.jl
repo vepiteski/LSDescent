@@ -65,8 +65,8 @@ function CG_generic(nlp :: AbstractNLPModel;
             scale = (y⋅s) / (y⋅y) 
         end
         if scale <= 0.0 
-            println(" scale = ",scale)
-            println(" ∇f⋅s = ",∇f⋅s,  " ∇ft⋅s = ",∇ft⋅s)
+            #println(" scale = ",scale)
+            #println(" ∇f⋅s = ",∇f⋅s,  " ∇ft⋅s = ",∇ft⋅s)
             scale = 1.0
         end
         x = xt

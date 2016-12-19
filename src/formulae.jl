@@ -18,7 +18,7 @@ end
 function formula_HS(∇f,∇ft,s,d)
 
     y = ∇ft - ∇f
-    β = (∇ft⋅y)/(∇f⋅y)
+    β = (∇ft⋅y)/(d⋅y)
     
     return β
 end
