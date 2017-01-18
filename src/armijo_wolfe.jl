@@ -22,7 +22,7 @@ function Newarmijo_wolfe(h :: C1LineFunction,
   while (slope_t < τ₁*slope) && (ht <= h₀ + τ₀ * t * slope) && (nbW < nbWM)
     t *= 5.0
     ht = obj(h, t)
-    slope_t = grad!(h, t, g)        #scale = (y⋅s) / (y⋅y)
+    slope_t = grad!(h, t, g)       
 
     nbW += 1
     verbose && @printf(" W  %4d  slope  %4d slopet %4d\n", nbW, slope, slope_t);

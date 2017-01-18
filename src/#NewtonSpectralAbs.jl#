@@ -1,50 +1,22 @@
-export NewtonLDLt
+export NewtonSpectral
 
-include("ldlt_symm.jl")
-
-function NwtdirectionLDLt(H,g)
-    L = Array(Float64,2)
-    D = Array(Float64,2)
-    pp = Array(Int,1)
-    ρ = Float64
-    ncomp = Int64
-    
+function NwtdirectionSpectral(H,g)
+    Δ = ones(g)
+    V = ones(H)
     try
-        (L, D, pp, rho, ncomp) = ldlt_symm(H,'r')
-    catch
- 	println("*******   Problem in LDLt")
-        #res = PDataLDLt()
-        #res.OK = false
-        #return res
-        return (NaN, NaN, NaN, Inf, false, true, :fail)
+        Δ, V = eig(H)
+    catch # There is a bug in Lapack eig, sometimes requiring the catch (unfortunately)
+        Δ, V = eig(H + eye(H))
     end
-
-    # A[pp,pp] = P*A*P' =  L*D*L'
-
-    if true in isnan(D) 
- 	println("*******   Problem in D from LDLt: NaN")
-        println(" cond (H) = $(cond(H))")
-        #res = PDataLDLt()
-        #res.OK = false
-        #return res
-        return (NaN, NaN, NaN, Inf, false, true, :fail)
-    end
-
-    Δ, Q = eig(D)
-
-    ϵ2 =  1.0e-8
-    Γ = max(abs(Δ),ϵ2)
-
-    # Ad = P'*L*Q*Δ*Q'*L'*Pd =    -g
-    # replace Δ by Γ to ensure positive definiteness
-    d̃ = L\g[pp]
-    d̂ = L'\ (Q*(Q'*d̃ ./ Γ))
-    d = - d̂[invperm(pp)]
-
+    ϵ2 =  1.0e-8 
+    Γ = 1.0 ./ max(abs(Δ),ϵ2)
+    
+    d = - (V * diagm(Γ) * V') * (g)
     return d
 end
 
-function NewtonLDLt(nlp :: AbstractNLPModel;
+
+function NewtonSpectral(nlp :: AbstractNLPModel;
                atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
                max_eval :: Int=0,
                verbose :: Bool=true,
@@ -81,7 +53,7 @@ function NewtonLDLt(nlp :: AbstractNLPModel;
     scale = 1.0
     
     while !(optimal || tired)
-        d = NwtdirectionLDLt(H,∇f)
+        d = NwtdirectionSpectral(H,∇f)
         slope = BLAS.dot(n, d, 1, ∇f, 1)
 
         verbose && @printf("  %8.1e", slope)

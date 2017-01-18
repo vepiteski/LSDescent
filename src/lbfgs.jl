@@ -3,7 +3,7 @@ export Newlbfgs
 function Newlbfgs(nlp :: AbstractNLPModel;
                atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
                max_eval :: Int=0,
-               verbose :: Bool=true,
+               verbose :: Bool=false,
                mem :: Int=5,
                linesearch :: Function = Newarmijo_wolfe,
                kwargs...)

@@ -1,7 +1,13 @@
-export Newton
+export NewtonSpectral
 
 function NwtdirectionSpectral(H,g)
-    Δ, V = eig(H)
+    Δ = ones(g)
+    V = ones(H)
+    try
+        Δ, V = eig(H)
+    catch
+        Δ, V = eig(H + eye(H))
+    end
     ϵ2 =  1.0e-8 
     Γ = 1.0 ./ max(abs(Δ),ϵ2)
     
@@ -10,7 +16,7 @@ function NwtdirectionSpectral(H,g)
 end
 
 
-function Newton(nlp :: AbstractNLPModel;
+function NewtonSpectral(nlp :: AbstractNLPModel;
                atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
                max_eval :: Int=0,
                verbose :: Bool=true,
@@ -87,6 +93,6 @@ function Newton(nlp :: AbstractNLPModel;
     end
     verbose && @printf("\n")
     
-    status = tired ? "maximum number of evaluations" : "first-order stationary"
+    status = tired ? "UserLimit" : "Optimal"
     return (x, f, ∇fNorm, iter, optimal, tired, status)
 end

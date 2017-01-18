@@ -1,0 +1,14 @@
+#!/bin/csh -f
+cd CUTEst_interface
+cp cg_descent $CUTEST/packages/defaults
+rm $CUTEST/src/cg_descent/*
+touch $CUTEST/src/cg_descent/cg_descent_main.c
+touch $CUTEST/src/cg_descent/cg_descent.c
+cp cg_default.c makemaster README.cg_descent $CUTEST/src/cg_descent
+gcc -O3 -lm -c -I$CUTEST/include -I.. cg_descent_main.c
+mv cg_descent_main.o  $CUTEST/objects/$MYARCH/double
+cd ..
+make purge
+make
+cp cg_descent.o $CUTEST/objects/$MYARCH/double
+rehash

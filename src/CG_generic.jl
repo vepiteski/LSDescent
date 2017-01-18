@@ -55,12 +55,13 @@ function CG_generic(nlp :: AbstractNLPModel;
         xt = x + t*d
 
         good_grad || (∇ft = grad!(nlp, xt, ∇ft))
-        
         # Move on.
         s = xt - x
         y = ∇ft - ∇f
-        β = CG_formula(∇f,∇ft,s,d)
-
+        β = 0.0
+        if (∇ft⋅∇f) < 0.2 * (∇ft⋅∇ft)   # Powell restart
+            β = CG_formula(∇f,∇ft,s,d)
+        end
         if scaling
             scale = (y⋅s) / (y⋅y) 
         end

@@ -1,0 +1,63 @@
+                   *********************************
+                   *                               *
+                   *  USING CG_DESCENT WITH CUTEst *
+                   *                               *
+                   *********************************
+
+              ( Last modified on 7 April 2014 at 16:40:00 )
+
+
+WHAT IS CG_DESCENT?
+-------------------
+
+The CG_DESCENT package is a nonlinear conjugate-gradient
+method for large-scale unconstrained minimization designed 
+by William Hager (Univ. Florida) and Hongchao Zhang (Louisiana State Univ.).
+
+HOW DO I GET CG_DESCENT?
+------------------------
+
+See
+
+http://clas.ufl.edu/users/hager/papers/CG/
+
+COMPILING THE OBJECT MODULE FOR CG_DESCENT
+------------------------------------------
+
+The CG_DESCENT file cg_descent.c should be compiled, and the resulting 
+file cg_descent.o should be placed in either the user-defined directory 
+$CG_DESCENT or in $CUTEST/objects/(architecture)/double/ for the architecture
+you intend to use. This is done automatically by the script cg_cutest_install
+in the cg_descent distribution.
+
+There is no single-precision version.
+
+USING THE CG_DESCENT INTERFACE TOOL
+-----------------------------------
+
+The command to solve a problem in SIF format contained in the file
+probname.SIF is
+
+runcutest -p cg_descent -D probname.SIF
+
+See the man page for runcutest for more details or other options.
+If no CG_DESCENT.SPC file is present in the current directory,
+then the default parameter values specified in cg_default are used.
+Optionally, new parameter values to overwrite the default values can
+be stored in a file CG_DESCENT.SPC in the directory where the runcutest
+command is executed.  The format of the file CG_DESCENT.SPC is the
+parameter name starting in column 1 followed by 1 or more spaces and
+then the parameter value. The parameter names are case sensitive.
+If the parameter value is true or false, then use 1 for true and 0
+for false.
+
+To use the BLAS, specify things like location and threading in both
+$CUTEST/bin/sys/$MYARCH and $CUTEST/makefiles/$MYARCH. For example,
+BLAS = "-L/data/GotoBLAS2 -lpthread"
+
+REFERENCE
+---------
+
+ W. W. Hager and H. Zhang, 
+ "Algorithm 851: CG_DESCENT, A conjugate gradient method with guaranteed 
+ descent", ACM Transactions on Mathematical Software, 32 (2006), 113-137. 

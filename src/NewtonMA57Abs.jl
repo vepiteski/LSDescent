@@ -9,7 +9,7 @@ function NwtdirectionMA57(H,g)
     ρ = Float64
     ncomp = Int64
     
-    H57 = convert(SparseMatrixCSC{Cdouble,Int32}, H)  #  Hard coded Cdouble
+    #H57 = convert(SparseMatrixCSC{Cdouble,Int32}, H)  #  Hard coded Cdouble
     try
         M = Ma57(H,print_level=-1)
         ma57_factorize(M)
@@ -152,6 +152,6 @@ function NewtonMA57(nlp :: AbstractNLPModel;
     end
     verbose && @printf("\n")
     
-    status = tired ? "maximum number of evaluations" : "first-order stationary"
+    status = tired ? "UserLimit" : "Optimal"
     return (x, f, ∇fNorm, iter, optimal, tired, status)
 end
