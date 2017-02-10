@@ -3,9 +3,9 @@ export CG_generic
 function CG_generic(nlp :: AbstractNLPModel;
                     atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
                     max_eval :: Int=0,
-                    verbose :: Bool=true,
-                    verboseLS :: Bool = true,
-                    mem :: Int=5,
+                    itmax :: Int=5000,
+                    verbose :: Bool=false,
+                    verboseLS :: Bool = false,
                     linesearch :: Function = Newarmijo_wolfe,
                     CG_formula :: Function = formula_HZ,
                     scaling :: Bool = true,

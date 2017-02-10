@@ -1,8 +1,17 @@
-export NewtonLDLt
+using HSL
 
-H=rand(5,5)
-H=H+H'
-g=ones(5)
+nlp = CUTEstModel("PALMER8C")
+x = copy(nlp.meta.x0)
+n = nlp.meta.nvar
+H = hess(nlp,x)
+H = (H+tril(H,-1)')
+finalize(nlp)
+run(`rm AUTOMAT.d`)
+run(`rm OUTSDIF.d`)
+run(`rm libPALMER8C.so`)
+#H=rand(5,5)
+#H=H+H'
+g=ones(n)
 
 M = Ma57
 L = SparseMatrixCSC{Float64,Int32}
@@ -12,9 +21,9 @@ s = Array{Float64}
 ρ = Float64
 ncomp = Int64
 
-H57 = convert(SparseMatrixCSC{Cdouble,Int32}, H)  #  Hard coded Cdouble
+H57 = convert(SparseMatrixCSC{Float64,Int}, H)  #  Hard coded Cdouble
 try
-    M = Ma57(H,print_level=-1)
+    M = Ma57(H57,print_level=-1)
     ma57_factorize(M)
 catch
     println("*******   Problem in MA57_0")
@@ -69,7 +78,7 @@ Q = spdiagm((vQ1,vQ2m,vQ2),[0,-1,1])           # sparse representation of Q
 Γ = max(abs(Δ),ϵ2)
 
 # Ad = P'*L*Q*Δ*Q'*L'*Pd =    -g
-P=eye(5,5)
+P=eye(n,n)
 P = P[:,pp]
 Hr = diagm(1 ./s)*P'*L*Q*diagm(Δ)*Q'*L'*P*diagm(1 ./s)
 # replace Δ by Γ to ensure positive definiteness
