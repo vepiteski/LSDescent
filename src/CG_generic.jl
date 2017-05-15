@@ -2,8 +2,8 @@ export CG_generic
 
 function CG_generic(nlp :: AbstractNLPModel;
                     atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
-                    max_eval :: Int=0,
-                    itmax :: Int=5000,
+                    max_eval :: Int=5000,
+                    max_iter :: Int=20000,
                     verbose :: Bool=false,
                     verboseLS :: Bool = false,
                     linesearch :: Function = Newarmijo_wolfe,
@@ -23,7 +23,6 @@ function CG_generic(nlp :: AbstractNLPModel;
     ∇fNorm = norm(∇f, Inf)
 
     ϵ = atol + rtol * ∇fNorm
-    max_eval == 0 && (max_eval = max(min(100, 2 * n), 5000))
     iter = 0
     
     verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")

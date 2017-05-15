@@ -2,13 +2,14 @@ export Newton
 
 function Newton(nlp :: AbstractNLPModel;
                 atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
-                max_eval :: Int=0,
+                max_eval :: Int=5000,
+                max_iter :: Int=20000,
                 verbose :: Bool=false,
                 verboseLS :: Bool = false,
                 verboseCG :: Bool = false,
                 mem :: Int=5,
                 linesearch :: Function = Newarmijo_wolfe,
-                Nwtdirection :: Function = NewtonMA57Abs,
+                Nwtdirection :: Function = NwtdirectionCG,
                 hessian_rep :: Function = hessian_sparse,
                 kwargs...)
 
@@ -25,15 +26,15 @@ function Newton(nlp :: AbstractNLPModel;
     
     ∇fNorm = BLAS.nrm2(n, ∇f, 1)
     ϵ = atol + rtol * ∇fNorm
-    max_eval == 0 && (max_eval = max(min(100, 2 * n), 5000))
     iter = 0
     
     verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")
     verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
     
     optimal = ∇fNorm <= ϵ
-    tired = nlp.counters.neval_obj + nlp.counters.neval_grad + nlp.counters.neval_hess > max_eval
-    
+    total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + n*nlp.counters.neval_hess+ nlp.counters.neval_hprod
+    tired = total_calls > max_eval
+
     β = 0.0
     d = zeros(∇f)
     scale = 1.0
@@ -73,7 +74,8 @@ function Newton(nlp :: AbstractNLPModel;
         verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
         
         optimal = (∇fNorm <= ϵ) | (isinf(f) & (f<0.0))
-        tired = nlp.counters.neval_obj + nlp.counters.neval_grad + nlp.counters.neval_hess > max_eval
+        total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + nlp.counters.neval_hess+ nlp.counters.neval_hprod
+        tired = total_calls > max_eval
     end
     verbose && @printf("\n")
     

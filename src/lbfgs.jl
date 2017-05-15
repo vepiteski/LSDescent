@@ -2,8 +2,8 @@ export Newlbfgs
 
 function Newlbfgs(nlp :: AbstractNLPModel;
                   atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
-                  max_eval :: Int=0,
-                  itmax :: Int=5000,
+                  max_eval :: Int=5000,
+                  max_iter :: Int=20000,
                   verbose :: Bool=false,
                   verboseLS :: Bool = false,
                   mem :: Int=5,
@@ -22,7 +22,6 @@ function Newlbfgs(nlp :: AbstractNLPModel;
     
     ∇fNorm = BLAS.nrm2(n, ∇f, 1)
     ϵ = atol + rtol * ∇fNorm
-    max_eval == 0 && (max_eval = max(min(100, 2 * n), 5000))
     iter = 0
 
     verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")

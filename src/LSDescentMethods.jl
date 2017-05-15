@@ -36,6 +36,8 @@ include("HessianOp.jl")
 include("cgTN.jl")
 include("NewtonCG.jl")
 include("Newton.jl")
+push!(ALL_solvers,Newton)
+
 
 using LineSearch
 
