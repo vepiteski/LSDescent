@@ -13,28 +13,28 @@ function CG_generic(nlp :: AbstractNLPModel;
 
     x = copy(nlp.meta.x0)
     n = nlp.meta.nvar
-    
+
     xt = Array(Float64, n)
     ∇ft = Array(Float64, n)
-    
+
     f = obj(nlp, x)
     ∇f = grad(nlp, x)
-    
+
     ∇fNorm = norm(∇f, Inf)
 
     ϵ = atol + rtol * ∇fNorm
     iter = 0
-    
+
     verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")
     verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
-    
+
     optimal = ∇fNorm <= ϵ
     tired = nlp.counters.neval_obj + nlp.counters.neval_grad > max_eval
-    
+
     β = 0.0
     d = zeros(∇f)
     scale = 1.0
-    
+
     while !(optimal || tired)
         d = - ∇f + β*d
         slope = ∇f⋅d
@@ -44,13 +44,17 @@ function CG_generic(nlp :: AbstractNLPModel;
         end
 
         verbose && @printf("  %8.1e", slope)
-        
+
         # Perform improved Armijo linesearch.
-        h = C1LineFunction(nlp, x, d*scale)
+        if linesearch in Newton_linesearch
+          h = C2LineFunction(nlp, x, d*scale)
+        else
+          h = C1LineFunction(nlp, x, d*scale)
+        end
         t, good_grad, ft, nbk, nbW = linesearch(h, f, slope*scale, ∇ft, verbose=verboseLS; kwargs...)
         t *= scale
         verbose && @printf("  %4d  %8e  %8e \n", nbk, t, scale)
-        
+
         xt = x + t*d
 
         good_grad || (∇ft = grad!(nlp, xt, ∇ft))
@@ -62,9 +66,9 @@ function CG_generic(nlp :: AbstractNLPModel;
             β = CG_formula(∇f,∇ft,s,d)
         end
         if scaling
-            scale = (y⋅s) / (y⋅y) 
+            scale = (y⋅s) / (y⋅y)
         end
-        if scale <= 0.0 
+        if scale <= 0.0
             #println(" scale = ",scale)
             #println(" ∇f⋅s = ",∇f⋅s,  " ∇ft⋅s = ",∇ft⋅s)
             scale = 1.0
@@ -76,14 +80,14 @@ function CG_generic(nlp :: AbstractNLPModel;
         # norm(∇f) bug: https://github.com/JuliaLang/julia/issues/11788
         ∇fNorm = norm(∇f, Inf)
         iter = iter + 1
-        
+
         verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
-        
+
         optimal = ∇fNorm <= ϵ
         tired = nlp.counters.neval_obj + nlp.counters.neval_grad > max_eval
     end
     verbose && @printf("\n")
-    
+
     status = tired ? "maximum number of evaluations" : "first-order stationary"
     return (x, f, ∇fNorm, iter, optimal, tired, status)
 end

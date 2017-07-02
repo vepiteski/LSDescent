@@ -37,7 +37,11 @@ function steepest(nlp :: AbstractNLPModel;
     verbose && @printf("  %8.1e", slope)
 
     # Perform improved Armijo linesearch.
-    h = C1LineFunction(nlp, x, d)
+    if linesearch in Newton_linesearch
+      h = C2LineFunction(nlp, x, d)
+    else
+      h = C1LineFunction(nlp, x, d)
+    end
     t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=false; kwargs...)
 
     verbose && @printf("  %4d\n", nbk)

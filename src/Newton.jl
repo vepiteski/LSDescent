@@ -15,22 +15,22 @@ function Newton(nlp :: AbstractNLPModel;
 
     x = copy(nlp.meta.x0)
     n = nlp.meta.nvar
-    
+
     xt = Array(Float64, n)
     ∇ft = Array(Float64, n)
-    
+
     f = obj(nlp, x)
     ∇f = grad(nlp, x)
 
     H = hessian_rep(nlp,x)
-    
+
     ∇fNorm = BLAS.nrm2(n, ∇f, 1)
     ϵ = atol + rtol * ∇fNorm
     iter = 0
-    
+
     verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")
     verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
-    
+
     optimal = ∇fNorm <= ϵ
     total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + n*nlp.counters.neval_hess+ nlp.counters.neval_hprod
     tired = total_calls > max_eval
@@ -38,24 +38,27 @@ function Newton(nlp :: AbstractNLPModel;
     β = 0.0
     d = zeros(∇f)
     scale = 1.0
-    
+
     while !(optimal || tired)
         d = Nwtdirection(H,∇f,verbose=verboseCG)
         slope = BLAS.dot(n, d, 1, ∇f, 1)
 
         verbose && @printf("  %8.1e", slope)
-        
-        # Perform improved Armijo linesearch.
-        h = C1LineFunction(nlp, x, d)
 
+        # Perform improved Armijo linesearch.
+        if linesearch in Newton_linesearch
+          h = C2LineFunction(nlp, x, d)
+        else
+          h = C1LineFunction(nlp, x, d)
+        end
 
         t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=false; kwargs...)
         verbose && @printf("  %4d\n", nbk)
-        
+
         BLAS.blascopy!(n, x, 1, xt, 1)
         BLAS.axpy!(n, t, d, 1, xt, 1)
         good_grad || (∇ft = grad!(nlp, xt, ∇ft))
-        
+
         # Move on.
         s = xt - x
         y = ∇ft - ∇f
@@ -64,21 +67,21 @@ function Newton(nlp :: AbstractNLPModel;
         f = ft
 
         H = hessian_rep(nlp,x)
- 
+
         BLAS.blascopy!(n, ∇ft, 1, ∇f, 1)
 
         # norm(∇f) bug: https://github.com/JuliaLang/julia/issues/11788
         ∇fNorm = BLAS.nrm2(n, ∇f, 1)
         iter = iter + 1
-        
+
         verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
-        
+
         optimal = (∇fNorm <= ϵ) | (isinf(f) & (f<0.0))
         total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + nlp.counters.neval_hess+ nlp.counters.neval_hprod
         tired = total_calls > max_eval
     end
     verbose && @printf("\n")
-    
+
     status = tired ? "UserLimit" : "Optimal"
     return (x, f, ∇fNorm, iter, optimal, tired, status)
 end
