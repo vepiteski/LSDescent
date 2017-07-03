@@ -4,7 +4,13 @@ export ALL_solvers, STOP_solvers
 
 using NLPModels
 using Optimize
+
+include("line_functions2.jl")
+
+
 using LinearOperators
+
+using PyPlot
 
 using Stopping
 
@@ -31,9 +37,9 @@ push!(ALL_solvers,CG_HZ)
 include("HessianDense.jl")
 include("NewtonSpectralAbs.jl")
 include("NewtonLDLtAbs.jl")
-using HSL
+#using HSL
 include("HessianSparse.jl")
-include("NewtonMA57Abs.jl")
+#include("NewtonMA57Abs.jl")
 include("HessianOp.jl")
 
 include("cgTN.jl")
@@ -50,6 +56,9 @@ include("Stopping/lbfgsS.jl")
 include("Stopping/NewtonS.jl")
 include("Stopping/steepestS.jl")
 
+include("BFGS_Jo.jl")
+
+
 push!(STOP_solvers,NewlbfgsS)
 push!(STOP_solvers,CG_FRS)
 push!(STOP_solvers,CG_PRS)
@@ -59,7 +68,7 @@ push!(STOP_solvers,CG_HZS)
 push!(STOP_solvers,NewtonS)
 
 
-using LineSearch
+using LineSearch, LineSearches
 
 
 

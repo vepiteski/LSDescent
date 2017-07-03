@@ -16,6 +16,7 @@ function NewlbfgsS(nlp :: AbstractNLPModel;
 
     f = obj(nlp, x)
     ∇f = grad(nlp, x)
+    ∇fNorm = BLAS.nrm2(n, ∇f, 1)
     H = InverseLBFGSOperator(n, mem, scaling=true)
 
     iter = 0
@@ -31,6 +32,8 @@ function NewlbfgsS(nlp :: AbstractNLPModel;
     stalled_linesearch = false
     stalled_ascent_dir = false
 
+    h_f = 0; h_g = 0; h_h = 0
+
     while (OK && !(optimal || tired || unbounded))
         d = - H * ∇f
         slope = BLAS.dot(n, d, 1, ∇f, 1)
@@ -40,8 +43,34 @@ function NewlbfgsS(nlp :: AbstractNLPModel;
           verbose && @printf("  %8.1e", slope)
         else
           # Perform improved Armijo linesearch.
-          h = C1LineFunction(nlp, x, d)
-          t, good_grad, ft, nbk, nbW,stalled_linesearch = linesearch(h, f, slope, ∇ft, verbose=verboseLS; kwargs...)
+          if linesearch in Newton_linesearch
+            h = C2LineFunction2(nlp, x, d)
+          else
+            h = C1LineFunction2(nlp, x, d)
+          end
+
+          debug = false
+
+          if print_h && (iter == print_h_iter)
+            debug= true
+            graph_linefunc(h, f, slope*scale;kwargs...)
+          end
+
+          if linesearch in interfaced_algorithms
+            h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
+            t,t_original, good_grad, nbk, nbW, stalled_linesearch = linesearch(h, f, slope, ∇ft; kwargs...)
+            h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
+            ft = obj(nlp, x + t*d)
+            nlp.counters.neval_obj += -1
+          else
+            t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch, h_f_c, h_g_c, h_h_c = linesearch(h, f, slope, ∇ft,
+                                                                                                         verboseLS = verboseLS;
+                                                                                                         kwargs...)
+            h_f += h_f_c
+            h_g += h_g_c
+            h_h += h_h_c
+          end
+        #t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=verboseLS; kwargs...)
 
           verbose && @printf("  %4d\n", nbk)
 
@@ -75,5 +104,5 @@ function NewlbfgsS(nlp :: AbstractNLPModel;
     else status = :UserLimit
     end
 
-    return (x, f, stp.optimality_residual(∇f), iter, optimal, tired, status)
+    return (x, f, stp.optimality_residual(∇f), iter, optimal, tired, status, h_f, h_g, h_h)
 end

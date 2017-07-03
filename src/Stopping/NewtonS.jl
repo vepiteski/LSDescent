@@ -19,6 +19,7 @@ function NewtonS(nlp :: AbstractNLPModel;
 
     f = obj(nlp, x)
     ∇f = grad(nlp, x)
+    ∇fNorm = BLAS.nrm2(n, ∇f, 1)
 
     H = hessian_rep(nlp,x)
 
@@ -26,8 +27,8 @@ function NewtonS(nlp :: AbstractNLPModel;
 
     stp = start!(nlp,stp,x)
 
-    verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")
-    verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
+    verbose && @printf("%4s  %8s  %7s  %8s  %4s %8s\n", " iter", "f", "‖∇f‖", "∇f'd", "bk","t")
+    verbose && @printf("%5d  %8.1e  %7.1e", iter, f, ∇fNorm)
 
     optimal, unbounded, tired, elapsed_time = stop(nlp,stp,iter,x,f,∇f)
 
@@ -39,6 +40,8 @@ function NewtonS(nlp :: AbstractNLPModel;
     d = zeros(∇f)
     scale = 1.0
 
+    h_f = 0; h_g = 0; h_h = 0
+
     while (OK && !(optimal || tired || unbounded))
         d = Nwtdirection(H,∇f,verbose=verboseCG)
         slope = BLAS.dot(n, d, 1, ∇f, 1)
@@ -46,17 +49,35 @@ function NewtonS(nlp :: AbstractNLPModel;
         verbose && @printf("  %8.1e", slope)
 
         # Perform improved Armijo linesearch.
-        # if linesearch==TR_Nwt_ls || linesearch==ARC_Nwt_ls || linesearch==trouve_intervalleA_ls
-        #    h = C2LineFunction(nlp, x, d)
-        #   t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=verboseLS; kwargs...)
-        # else
-        h = C1LineFunction(nlp, x, d)
-        t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=verboseLS; kwargs...)
-        #end
+        if linesearch in Newton_linesearch
+          h = C2LineFunction2(nlp, x, d)
+        else
+          h = C1LineFunction2(nlp, x, d)
+        end
 
-        #t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=false; kwargs...)
+        verboseLS && println(" ")
 
-        verbose && @printf("  %4d\n", nbk)
+        if linesearch in interfaced_algorithms
+          h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
+          t,t_original, good_grad, nbk, nbW, stalled_linesearch = linesearch(h, f, slope, ∇ft; kwargs...)
+          h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
+          ft = obj(nlp, x + t*d)
+          nlp.counters.neval_obj += -1
+        else
+          t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch, h_f_c, h_g_c, h_h_c = linesearch(h, f, slope, ∇ft,
+                                                                                                       verboseLS = verboseLS;
+                                                                                                       kwargs...)
+          h_f += h_f_c
+          h_g += h_g_c
+          h_h += h_h_c
+        end
+
+        if verboseLS
+           (verbose) && print(" \n")
+         else
+           (verbose) && @printf("  %4d %8s\n", nbk,t)
+         end
+
 
         BLAS.blascopy!(n, x, 1, xt, 1)
         BLAS.axpy!(n, t, d, 1, xt, 1)
@@ -92,5 +113,5 @@ function NewtonS(nlp :: AbstractNLPModel;
     else status = :UserLimit
     end
 
-    return (x, f, stp.optimality_residual(∇f), iter, optimal, tired, status)
+    return (x, f, stp.optimality_residual(∇f), iter, optimal, tired, status, h_f, h_g, h_h)
 end
