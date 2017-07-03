@@ -1,9 +1,9 @@
-export CG_generic
+export CG_generic_scaling
 
-function CG_generic(nlp :: AbstractNLPModel;
+function CG_generic_scaling(nlp :: AbstractNLPModel;
                     atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
-                    max_eval :: Int=20000,
-                    max_iter :: Int=5000,
+                    max_eval :: Int=5000,
+                    max_iter :: Int=20000,
                     verbose :: Bool=false,
                     verboseLS :: Bool = false,
                     linesearch :: Function = Newarmijo_wolfe,
@@ -48,59 +48,22 @@ function CG_generic(nlp :: AbstractNLPModel;
         # Perform improved Armijo linesearch.
         h = C1LineFunction(nlp, x, d*scale)
         #t, good_grad, ft, nbk, nbW = linesearch(h, f, slope*scale, ∇ft, verbose=verboseLS; kwargs...)
-        if linesearch==_strongwolfe2!
-          x_out = copy(x)
-          x_new = copy(x)
+        if linesearch==strongwolfe2
+          x_out = x
+          x_new = x
           if iter == 0
             gr_new = zeros(n)
           else
             gr_new = ∇f
           end
-          p = d*scale
-          lsr = LineSearchResults{Float64}([0.0],[f],[slope*scale],0)
+          p = d
+          lsr = [f, slope*scale]
           #lsr = [f, slope]
           alpha0 = 1.0
           mayterminate = false
-          #print_with_color(:magenta,"on peut rentrer dans le linesearch \n")
-          t = linesearch(nlp, x_out, p, x_new, lsr, alpha0, mayterminate; kwargs...)
-          good_grad = false
-          ft = obj(nlp, x + (t*scale)*d)
-          nbk = NaN
-          nbW = NaN
-        elseif linesearch == _hagerzhang2!
-          x_out = copy(x)
-          s = d*scale
-          xtmp = copy(x)
-          lsr = LineSearchResults{Float64}([0.0],[f],[slope*scale],0)
-          c = 1.0
-          mayterminate = false
-          t = linesearch(nlp, x_out, s, xtmp, lsr, c, mayterminate; kwargs... )
-          good_grad = false
-          ft = obj(nlp, x + (t*scale)*d)
-          nbk = NaN
-          nbW = NaN
-        elseif linesearch==_morethuente2!
-          x_out = copy(x)
-          s = d*scale
-          x_new = copy(x)
-          lsr = LineSearchResults{Float64}([0.0],[f],[slope*scale],0)
-          stp = 1.0
-          mayterminate = false
-          t= linesearch(nlp, x_out, s, x_new, lsr, stp, mayterminate; kwargs...)
-          good_grad = false
-          ft = obj(nlp, x + (t*scale)*d)
-          nbk = NaN
-          nbW = NaN
-        elseif linesearch==_backtracking2!
-          x_out = copy(x)
-          s = d*scale
-          x_scratch = copy(x)
-          lsr = LineSearchResults{Float64}([0.0],[f],[slope*scale],0)
-          t = linesearch(nlp, x_out, s, x_scratch, lsr; kwargs...)
-          good_grad = false
-          ft = obj(nlp, x + (t*scale)*d)
-          nbk = NaN
-          nbW = NaN
+          t, good_grad, ftest, nbk, nbW = linesearch(h, x, p, x_new, gr_new, lsr, alpha0, mayterminate; kwargs...)
+          ft = obj(nlp,ftest)
+          x = x_out
         else
           t, good_grad, ft, nbk, nbW = linesearch(h, f, slope*scale, ∇ft, verbose=verboseLS; kwargs...)
         end
@@ -134,10 +97,6 @@ function CG_generic(nlp :: AbstractNLPModel;
         # norm(∇f) bug: https://github.com/JuliaLang/julia/issues/11788
         ∇fNorm = norm(∇f, Inf)
         iter = iter + 1
-
-        # if iter >= 915
-        #   verboseLS = true
-        # end
 
         verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
 
