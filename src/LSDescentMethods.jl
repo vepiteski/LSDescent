@@ -1,6 +1,6 @@
 module LSDescentMethods
 
-export ALL_solvers
+export ALL_solvers, STOP_solvers
 
 using NLPModels
 using Optimize
@@ -12,6 +12,7 @@ include("armijo_wolfe.jl")
 
 AbstractLineFunction = Union{C1LineFunction,C2LineFunction}
 ALL_solvers = Function[]
+STOP_solvers = Function[]
 
 include("lbfgs.jl")
 push!(ALL_solvers,Newlbfgs)
@@ -48,6 +49,15 @@ include("Stopping/CG_PRS.jl")
 include("Stopping/lbfgsS.jl")
 include("Stopping/NewtonS.jl")
 include("Stopping/steepestS.jl")
+
+push!(STOP_solvers,NewlbfgsS)
+push!(STOP_solvers,CG_FRS)
+push!(STOP_solvers,CG_PRS)
+push!(STOP_solvers,CG_HSS)
+push!(STOP_solvers,CG_HZS)
+
+push!(STOP_solvers,NewtonS)
+
 
 using LineSearch
 

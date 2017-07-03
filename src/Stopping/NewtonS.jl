@@ -7,8 +7,8 @@ function NewtonS(nlp :: AbstractNLPModel;
                  verboseCG :: Bool = false,
                  mem :: Int=5,
                  linesearch :: Function = Newarmijo_wolfe,
-                 Nwtdirection :: Function = NwtdirectionSpectral,
-                 hessian_rep :: Function = hessian_dense,
+                 Nwtdirection :: Function = NwtdirectionCG,
+                 hessian_rep :: Function = hessian_operator,
                  kwargs...)
 
     x = copy(nlp.meta.x0)
