@@ -79,7 +79,7 @@ function CG_genericS(nlp :: AbstractNLPModel;
           ft = obj(nlp, x + (t*scale)*d)
           nlp.counters.neval_obj += -1
         else
-          t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch, h_f_c, h_g_c, h_h_c = linesearch(h, f, slope * scale, ∇ft,
+          t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch, h_f_c, h_g_c, h_h_c = linesearch(h, f, slope * scale, ∇ft;
                                                                                                        verboseLS = verboseLS,
                                                                                                        debug = debug,
                                                                                                        kwargs...)
