@@ -18,12 +18,12 @@ function CG_genericS(nlp :: AbstractNLPModel;
     ∇ft = Array(Float64, n)
 
     f = obj(nlp, x)
-    ∇f = grad(nlp, x)
-    ∇fNorm = BLAS.nrm2(n, ∇f, 1)
 
     iter = 0
 
-    stp = start!(nlp,stp,x)
+    #∇f = grad(nlp, x)
+    stp, ∇f = start!(nlp,stp,x)
+    ∇fNorm = BLAS.nrm2(n, ∇f, 1)
 
     if n <= 2
       verbose && @printf("%4s  %8s  %11s %17s  %13s     %4s  %2s   %14s  %14s  %14s \n", "iter", "f", "‖∇f‖", "x", "∇f'd", "bk","t","scale","h'(t)","t_original")

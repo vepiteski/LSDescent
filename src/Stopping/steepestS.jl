@@ -13,11 +13,11 @@ function steepestS(nlp :: AbstractNLPModel;
     ∇ft = Array(Float64, n)
 
     f = obj(nlp, x)
-    ∇f = grad(nlp, x)
 
     iter = 0
 
-    s = start!(nlp,stp,x)
+    #∇f = grad(nlp, x)
+    s, ∇f = start!(nlp,stp,x)
 
     verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")
     verbose && @printf("%4d  %8.1e  %7.1e", iter, f, norm(∇f))

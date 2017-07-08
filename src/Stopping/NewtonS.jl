@@ -18,14 +18,14 @@ function NewtonS(nlp :: AbstractNLPModel;
     ∇ft = Array(Float64, n)
 
     f = obj(nlp, x)
-    ∇f = grad(nlp, x)
     ∇fNorm = BLAS.nrm2(n, ∇f, 1)
 
     H = hessian_rep(nlp,x)
 
     iter = 0
 
-    stp = start!(nlp,stp,x)
+    #∇f = grad(nlp, x)
+    stp, ∇f = start!(nlp,stp,x)
 
     verbose && @printf("%4s  %8s  %7s  %8s  %4s %8s\n", " iter", "f", "‖∇f‖", "∇f'd", "bk","t")
     verbose && @printf("%5d  %8.1e  %7.1e", iter, f, ∇fNorm)

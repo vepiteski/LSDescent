@@ -39,9 +39,9 @@ function Newlbfgs(nlp :: AbstractNLPModel;
 
         # Perform improved Armijo linesearch.
         if linesearch in Newton_linesearch
-          h = C2LineFunction(nlp, x, d)
+          h = C2LineFunction2(nlp, x, d)
         else
-          h = C1LineFunction(nlp, x, d)
+          h = C1LineFunction2(nlp, x, d)
         end
         t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=verboseLS; kwargs...)
 

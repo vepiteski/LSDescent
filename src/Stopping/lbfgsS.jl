@@ -7,7 +7,7 @@ function NewlbfgsS(nlp :: AbstractNLPModel;
                   mem :: Int=5,
                   linesearch :: Function = Newarmijo_wolfe,
                   kwargs...)
-
+print_h=false
     x = copy(nlp.meta.x0)
     n = nlp.meta.nvar
 
@@ -15,13 +15,13 @@ function NewlbfgsS(nlp :: AbstractNLPModel;
     ∇ft = Array(Float64, n)
 
     f = obj(nlp, x)
-    ∇f = grad(nlp, x)
-    ∇fNorm = BLAS.nrm2(n, ∇f, 1)
     H = InverseLBFGSOperator(n, mem, scaling=true)
 
     iter = 0
 
-    stp = start!(nlp,stp,x)
+    #∇f = grad(nlp, x)
+    stp, ∇f = start!(nlp,stp,x)
+    ∇fNorm = BLAS.nrm2(n, ∇f, 1)
 
     verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")
     verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
