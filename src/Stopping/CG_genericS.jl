@@ -14,8 +14,10 @@ function CG_genericS(nlp :: AbstractNLPModel;
     x = copy(nlp.meta.x0)
     n = nlp.meta.nvar
 
-    xt = Array(Float64, n)
-    ∇ft = Array(Float64, n)
+    # xt = Array(Float64, n)
+    # ∇ft = Array(Float64, n)
+    xt = Array{Float64}(n)
+    ∇ft = Array{Float64}(n)
 
     f = obj(nlp, x)
 
@@ -57,10 +59,16 @@ function CG_genericS(nlp :: AbstractNLPModel;
         verbose && @printf(" %10.1e", slope*scale)
 
         # Perform improved Armijo linesearch.
-        if linesearch in Newton_linesearch
-          h = C2LineFunction2(nlp, x, d*scale)
+        # if linesearch in Newton_linesearch
+        #   h = C2LineFunction2(nlp, x, d*scale)
+        # else
+        #   h = C1LineFunction2(nlp, x, d*scale)
+        # end
+
+        if iter < 1
+          h = LineModel(nlp, x, d*scale)
         else
-          h = C1LineFunction2(nlp, x, d*scale)
+          h = Optimize.redirect!(h, x, d*scale)
         end
 
         debug = false
@@ -79,13 +87,12 @@ function CG_genericS(nlp :: AbstractNLPModel;
           ft = obj(nlp, x + (t*scale)*d)
           nlp.counters.neval_obj += -1
         else
-          t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch, h_f_c, h_g_c, h_h_c = linesearch(h, f, slope * scale, ∇ft;
+          h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
+          t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch = linesearch(h, f, slope * scale, ∇ft;
                                                                                                        verboseLS = verboseLS,
                                                                                                        debug = debug,
                                                                                                        kwargs...)
-          h_f += h_f_c
-          h_g += h_g_c
-          h_h += h_h_c
+          h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
         end
 
         t *= scale

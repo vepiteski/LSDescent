@@ -3,14 +3,17 @@ export steepestS
 function steepestS(nlp :: AbstractNLPModel;
                   stp :: TStopping = TStopping(),
                   verbose :: Bool=true,
+                  verboseLS :: Bool = false,
                   linesearch :: Function = Newarmijo_wolfe,
                   kwargs...)
 
     x = copy(nlp.meta.x0)
     n = nlp.meta.nvar
 
-    xt = Array(Float64, n)
-    ∇ft = Array(Float64, n)
+    # xt = Array(Float64, n)
+    # ∇ft = Array(Float64, n)
+    xt = Array{Float64}(n)
+    ∇ft = Array{Float64}(n)
 
     f = obj(nlp, x)
 
@@ -40,10 +43,15 @@ function steepestS(nlp :: AbstractNLPModel;
             verbose && @printf("  %8.1e", slope)
 
             # Perform improved Armijo linesearch.
-            if linesearch in Newton_linesearch
-              h = C2LineFunction2(nlp, x, d)
+            # if linesearch in Newton_linesearch
+            #   h = C2LineFunction2(nlp, x, d)
+            # else
+            #   h = C1LineFunction2(nlp, x, d)
+            # end
+            if iter < 1
+              h = LineModel(nlp, x, d)
             else
-              h = C1LineFunction2(nlp, x, d)
+              h = Optimize.redirect!(h, x, d)
             end
 
             verboseLS && println(" ")
@@ -55,12 +63,11 @@ function steepestS(nlp :: AbstractNLPModel;
               ft = obj(nlp, x + t*d)
               nlp.counters.neval_obj += -1
             else
-              t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch, h_f_c, h_g_c, h_h_c = linesearch(h, f, slope, ∇ft,
-                                                                                                           verboseLS = verboseLS;
-                                                                                                           kwargs...)
-              h_f += h_f_c
-              h_g += h_g_c
-              h_h += h_h_c
+              h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
+              t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch  = linesearch(h, f, slope, ∇ft,
+                                                                                       verboseLS = verboseLS;
+                                                                                       kwargs...)
+              h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
             end
             #!stalled_linesearch || println("Max number of Armijo backtracking ",nbk)
             verbose && @printf("  %4d\n", nbk)

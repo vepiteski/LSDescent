@@ -16,7 +16,7 @@ using Stopping
 
 include("armijo_wolfe.jl")
 
-AbstractLineFunction = Union{C1LineFunction,C2LineFunction}
+# AbstractLineFunction = Union{C1LineFunction,C2LineFunction}
 ALL_solvers = Function[]
 STOP_solvers = Function[]
 
