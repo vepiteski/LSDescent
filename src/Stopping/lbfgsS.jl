@@ -45,13 +45,7 @@ function NewlbfgsS(nlp :: AbstractNLPModel;
           stalled_linesearch =true
           verbose && @printf("  %8.1e", slope)
         else
-          # Perform improved Armijo linesearch.
-          # if linesearch in Newton_linesearch
-          #   h = C2LineFunction2(nlp, x, d)
-          # else
-          #   h = C1LineFunction2(nlp, x, d)
-          # end
-
+          # Perform linesearch.
           if iter < 1
             h = LineModel(nlp, x, d)
           else
@@ -65,20 +59,14 @@ function NewlbfgsS(nlp :: AbstractNLPModel;
             graph_linefunc(h, f, slope*scale;kwargs...)
           end
 
+          h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
+          t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch = linesearch(h, f, slope, ∇ft; verboseLS = verboseLS, kwargs...)
+          h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
+
           if linesearch in interfaced_algorithms
-            h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
-            t,t_original, good_grad, nbk, nbW, stalled_linesearch = linesearch(h, f, slope, ∇ft; kwargs...)
-            h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
-            ft = obj(nlp, x + t*d)
+            ft = obj(nlp, x + (t)*d)
             nlp.counters.neval_obj += -1
-          else
-            h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
-            t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch = linesearch(h, f, slope, ∇ft,
-                                                                                    verboseLS = verboseLS;
-                                                                                    kwargs...)
-            h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
           end
-        #t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=verboseLS; kwargs...)
 
           verbose && @printf("  %4d\n", nbk)
 
