@@ -5,9 +5,6 @@ export ALL_solvers, STOP_solvers
 using NLPModels
 using Optimize
 
-include("line_functions2.jl")
-
-
 using LinearOperators
 
 using PyPlot
