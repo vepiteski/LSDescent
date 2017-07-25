@@ -1,59 +1,79 @@
-export Newton
+export NewtonS
 
-function Newton(nlp :: AbstractNLPModel;
-                atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
-                max_eval :: Int=5000,
-                max_iter :: Int=20000,
-                verbose :: Bool=false,
-                verboseLS :: Bool = false,
-                verboseCG :: Bool = false,
-                mem :: Int=5,
-                linesearch :: Function = Newarmijo_wolfe,
-                Nwtdirection :: Function = NwtdirectionCG,
-                hessian_rep :: Function = hessian_sparse,
-                kwargs...)
+function NewtonS(nlp :: AbstractNLPModel;
+                 stp :: TStopping=TStopping(),
+                 verbose :: Bool=false,
+                 verboseLS :: Bool = false,
+                 verboseCG :: Bool = false,
+                 mem :: Int=5,
+                 linesearch :: Function = Newarmijo_wolfe,
+                 Nwtdirection :: Function = NwtdirectionCG,
+                 hessian_rep :: Function = hessian_operator,
+                 kwargs...)
 
     x = copy(nlp.meta.x0)
     n = nlp.meta.nvar
 
-    xt = Array(Float64, n)
-    ∇ft = Array(Float64, n)
+    # xt = Array(Float64, n)
+    # ∇ft = Array(Float64, n)
+    xt = Array{Float64}(n)
+    ∇ft = Array{Float64}(n)
 
     f = obj(nlp, x)
-    ∇f = grad(nlp, x)
+    #∇f = grad(nlp, x)
+    stp, ∇f = start!(nlp,stp,x)
+    ∇fNorm = BLAS.nrm2(n, ∇f, 1)
 
     H = hessian_rep(nlp,x)
 
-    ∇fNorm = BLAS.nrm2(n, ∇f, 1)
-    ϵ = atol + rtol * ∇fNorm
     iter = 0
 
-    verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")
-    verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
 
-    optimal = ∇fNorm <= ϵ
-    total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + n*nlp.counters.neval_hess+ nlp.counters.neval_hprod
-    tired = total_calls > max_eval
+    verbose && @printf("%4s  %8s  %7s  %8s  %4s %8s\n", " iter", "f", "‖∇f‖", "∇f'd", "bk","t")
+    verbose && @printf("%5d  %8.1e  %7.1e", iter, f, ∇fNorm)
+
+    optimal, unbounded, tired, elapsed_time = stop(nlp,stp,iter,x,f,∇f)
+
+    OK = true
+    stalled_linesearch = false
+    stalled_ascent_dir = false
 
     β = 0.0
     d = zeros(∇f)
     scale = 1.0
 
-    while !(optimal || tired)
+    h_f = 0; h_g = 0; h_h = 0
+
+    while (OK && !(optimal || tired || unbounded))
         d = Nwtdirection(H,∇f,verbose=verboseCG)
         slope = BLAS.dot(n, d, 1, ∇f, 1)
 
         verbose && @printf("  %8.1e", slope)
 
-        # Perform improved Armijo linesearch.
-        if linesearch in Newton_linesearch
-          h = C2LineFunction(nlp, x, d)
+        # Perform linesearch.
+        if iter < 1
+          h = LineModel(nlp, x, d)
         else
-          h = C1LineFunction(nlp, x, d)
+          h = Optimize.redirect!(h, x, d)
         end
 
-        t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=false; kwargs...)
-        verbose && @printf("  %4d\n", nbk)
+        verboseLS && println(" ")
+
+        h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
+        t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch = linesearch(h, f, slope, ∇ft; verboseLS = verboseLS, kwargs...)
+        h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
+
+        if linesearch in interfaced_algorithms
+          ft = obj(nlp, x + (t)*d)
+          nlp.counters.neval_obj += -1
+        end
+
+        if verboseLS
+           (verbose) && print(" \n")
+         else
+           (verbose) && @printf("  %4d %8s\n", nbk,t)
+         end
+
 
         BLAS.blascopy!(n, x, 1, xt, 1)
         BLAS.axpy!(n, t, d, 1, xt, 1)
@@ -75,13 +95,19 @@ function Newton(nlp :: AbstractNLPModel;
         iter = iter + 1
 
         verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
+        optimal, unbounded, tired, elapsed_time = stop(nlp,stp,iter,x,f,∇f)
+        OK = !stalled_linesearch & !stalled_ascent_dir
 
-        optimal = (∇fNorm <= ϵ) | (isinf(f) & (f<0.0))
-        total_calls = nlp.counters.neval_obj + nlp.counters.neval_grad + nlp.counters.neval_hess+ nlp.counters.neval_hprod
-        tired = total_calls > max_eval
     end
+
     verbose && @printf("\n")
 
-    status = tired ? "UserLimit" : "Optimal"
-    return (x, f, ∇fNorm, iter, optimal, tired, status)
+    if optimal status = :Optimal
+    elseif unbounded status = :Unbounded
+    elseif stalled_linesearch status = :StalledLinesearch
+    elseif stalled_ascent_dir status = :StalledAscentDir
+    else status = :UserLimit
+    end
+
+    return (x, f, stp.optimality_residual(∇f), iter, optimal, tired, status, h_f, h_g, h_h)
 end
