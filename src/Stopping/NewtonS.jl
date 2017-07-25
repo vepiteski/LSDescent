@@ -9,6 +9,8 @@ function NewtonS(nlp :: AbstractNLPModel;
                  linesearch :: Function = Newarmijo_wolfe,
                  Nwtdirection :: Function = NwtdirectionCG,
                  hessian_rep :: Function = hessian_operator,
+                 print_h :: Bool = false,
+                 print_h_iter :: Int64 = 1,
                  kwargs...)
 
     x = copy(nlp.meta.x0)
@@ -57,6 +59,13 @@ function NewtonS(nlp :: AbstractNLPModel;
 
         verboseLS && println(" ")
 
+        debug = false
+
+        if print_h && (iter == print_h_iter)
+          debug = true
+          graph_linefunc(h, f, slope*scale;kwargs...)
+        end
+
         if linesearch in interfaced_algorithms
           h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
           t,t_original, good_grad, nbk, nbW, stalled_linesearch = linesearch(h, f, slope, ∇ft; kwargs...)
@@ -65,7 +74,8 @@ function NewtonS(nlp :: AbstractNLPModel;
           nlp.counters.neval_obj += -1
         else
           t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch, h_f_c, h_g_c, h_h_c = linesearch(h, f, slope, ∇ft,
-                                                                                                       verboseLS = verboseLS;
+                                                                                                       verboseLS = verboseLS,
+                                                                                                       debug = debug;
                                                                                                        kwargs...)
           h_f += h_f_c
           h_g += h_g_c

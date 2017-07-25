@@ -81,7 +81,7 @@ function CG_genericS(nlp :: AbstractNLPModel;
         else
           t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch, h_f_c, h_g_c, h_h_c = linesearch(h, f, slope * scale, ∇ft;
                                                                                                        verboseLS = verboseLS,
-                                                                                                       debug = debug,
+                                                                                                       debug = debug;
                                                                                                        kwargs...)
           h_f += h_f_c
           h_g += h_g_c

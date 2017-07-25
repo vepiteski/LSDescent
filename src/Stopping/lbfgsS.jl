@@ -6,6 +6,8 @@ function NewlbfgsS(nlp :: AbstractNLPModel;
                   verboseLS :: Bool = false,
                   mem :: Int=5,
                   linesearch :: Function = Newarmijo_wolfe,
+                  print_h :: Bool = false,
+                  print_h_iter :: Int64 = 1,
                   kwargs...)
 print_h=false
     x = copy(nlp.meta.x0)
@@ -64,7 +66,8 @@ print_h=false
             nlp.counters.neval_obj += -1
           else
             t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch, h_f_c, h_g_c, h_h_c = linesearch(h, f, slope, ∇ft,
-                                                                                                         verboseLS = verboseLS;
+                                                                                                         verboseLS = verboseLS,
+                                                                                                         debug = debug;
                                                                                                          kwargs...)
             h_f += h_f_c
             h_g += h_g_c
