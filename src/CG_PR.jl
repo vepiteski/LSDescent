@@ -1,6 +1,6 @@
-export CG_PRS
+export CG_PR
 
-function CG_PRS(nlp :: AbstractNLPModel;
+function CG_PR(nlp :: AbstractNLPModel;
                stp :: TStopping = TStopping(),
                verbose :: Bool=false,
                verboseLS :: Bool = false,
@@ -9,7 +9,7 @@ function CG_PRS(nlp :: AbstractNLPModel;
                scaling :: Bool = true,
                kwargs...)
 
-    return CG_genericS(nlp;
+    return CG_generic(nlp;
                       stp=stp,
                       verbose = verbose,
                       verboseLS = verboseLS,

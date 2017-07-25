@@ -1,6 +1,6 @@
-export CG_HZS
+export CG_HZ
 
-function CG_HZS(nlp :: AbstractNLPModel;
+function CG_HZ(nlp :: AbstractNLPModel;
                stp :: TStopping = TStopping(),
                verbose :: Bool=false,
                verboseLS :: Bool = false,
@@ -9,7 +9,7 @@ function CG_HZS(nlp :: AbstractNLPModel;
                scaling :: Bool = true,
                kwargs...)
 
-    return CG_genericS(nlp;
+    return CG_generic(nlp;
                       stp=stp,
                       verbose = verbose,
                       verboseLS = verboseLS,

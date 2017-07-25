@@ -1,6 +1,6 @@
 export NewlbfgsS
 
-function NewlbfgsS(nlp :: AbstractNLPModel;
+function Newlbfgs(nlp :: AbstractNLPModel;
                   stp :: TStopping=TStopping(),
                   verbose :: Bool=false,
                   verboseLS :: Bool = false,

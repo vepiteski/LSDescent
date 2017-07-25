@@ -1,15 +1,15 @@
-export CG_genericS
+export CG_generic
 
-function CG_genericS(nlp :: AbstractNLPModel;
-                     stp :: TStopping = TStopping(),
-                     verbose :: Bool=false,
-                     verboseLS :: Bool = false,
-                     linesearch :: Function = Newarmijo_wolfe,
-                     CG_formula :: Function = formula_HZ,
-                     scaling :: Bool = true,
-                     print_h :: Bool = false,
-                     print_h_iter :: Int64 = 1,
-                     kwargs...)
+function CG_generic(nlp :: AbstractNLPModel;
+                    stp :: TStopping = TStopping(),
+                    verbose :: Bool=false,
+                    verboseLS :: Bool = false,
+                    linesearch :: Function = Newarmijo_wolfe,
+                    CG_formula :: Function = formula_HZ,
+                    scaling :: Bool = true,
+                    print_h :: Bool = false,
+                    print_h_iter :: Int64 = 1,
+                    kwargs...)
 
     x = copy(nlp.meta.x0)
     n = nlp.meta.nvar

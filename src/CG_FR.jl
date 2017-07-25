@@ -1,6 +1,6 @@
-export CG_FRS
+export CG_FR
 
-function CG_FRS(nlp :: AbstractNLPModel;
+function CG_FR(nlp :: AbstractNLPModel;
                stp :: TStopping = TStopping(),
                verbose :: Bool=false,
                verboseLS :: Bool = false,
@@ -9,7 +9,7 @@ function CG_FRS(nlp :: AbstractNLPModel;
                scaling :: Bool = true,
                kwargs...)
 
-    return CG_genericS(nlp;
+    return CG_generic(nlp;
                       stp=stp,
                       verbose = verbose,
                       verboseLS = verboseLS,
