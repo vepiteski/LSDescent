@@ -1,7 +1,7 @@
 export CG_HZ
 
 function CG_HZ(nlp :: AbstractNLPModel;
-               atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
+               stp :: TStopping = TStopping(),
                verbose :: Bool=false,
                verboseLS :: Bool = false,
                mem :: Int=5,
@@ -10,7 +10,7 @@ function CG_HZ(nlp :: AbstractNLPModel;
                kwargs...)
 
     return CG_generic(nlp;
-                      atol=atol, rtol =rtol,
+                      stp=stp,
                       verbose = verbose,
                       verboseLS = verboseLS,
                       mem = mem,

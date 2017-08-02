@@ -3,7 +3,7 @@ using LinearOperators
 
 
 "Abstract type for statistics returned by a solver"
-abstract KrylovStats;
+abstract type KrylovStats end;
 
 "Type for statistics returned by non-Lanczos solvers"
 type SimpleStats <: KrylovStats
@@ -26,7 +26,7 @@ end
 #
 # Try to adapt a stopping criterion based on regulα for the ARCq.
 #
-# First reformulate the TR case using the characteristic function to confirm it is 
+# First reformulate the TR case using the characteristic function to confirm it is
 # equivalent to the usual implementation. A must be symmetric to define a quadratic objective
 # q(x) = 0.5*x'*A*x - b'*x
 #
@@ -53,39 +53,39 @@ The method does _not_ abort if A is not definite.
 function cgTN{T <: Real}(A :: LinearOperator, b :: Array{T,1};
                          atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6, itmax :: Int=0,
                          verbose :: Bool=false)
-    
+
     n = size(b, 1);
     (size(A, 1) == n & size(A, 2) == n) || error("Inconsistent problem size");
     #isequal(triu(A)',tril(A)) || error("Must supply Hermitian matrix")
-    
+
     verbose && @printf("CG: system of %d equations in %d variables\n", n, n);
-    
+
     # Initial state.
     x = zeros(n)
     x̂ = copy(x)
-    
+
     γ = dot(b, b);
     γ == 0 && return x;
     r = copy(b);
     p = copy(r);
-    
+
     σ = 0.0
-    
+
     iter = 0;
     itmax == 0 && (itmax = 2 * n);
-    
+
     rNorm = sqrt(γ);
     rNorms = [rNorm;];
     ε = atol + rtol * rNorm;
     verbose && @printf("%5d  %8.1e ", iter, rNorm)
-    
+
     solved = rNorm <= ε;
     tired = iter >= itmax;
     neg_curv = false;
     status = "unknown";
-    
-    #q = s ->  0.5 * dot(s, copy(A * s)) - dot(b, s) 
-    
+
+    #q = s ->  0.5 * dot(s, copy(A * s)) - dot(b, s)
+
     #m = s ->  q(s) + norm(s)^3/(3*regulα)
     #hO = α -> m(x+α*p)
     Ap = copy(A * p);  # Bug in LinearOperators? A side effect spoils the computation without the copy.
@@ -102,7 +102,7 @@ function cgTN{T <: Real}(A :: LinearOperator, b :: Array{T,1};
         γ_next = BLAS.dot(n, r, 1, r, 1);
         rNorm = sqrt(γ);
         push!(rNorms, rNorm);
-        
+
         solved = (rNorm <= ε) ;
         tired = iter >= itmax;
 
@@ -122,11 +122,11 @@ function cgTN{T <: Real}(A :: LinearOperator, b :: Array{T,1};
         α = γ / pAp;
 
         verbose && @printf("%8.1e  %7.1e  %7.1e\n", pAp, α, σ);
-        
+
         # Move along p from x to the min if either
         # the next step leads farther than the min of the regularized model or
         # we have nonpositive curvature.
-        if (pAp <= 0.0) 
+        if (pAp <= 0.0)
             α = 0.0
             neg_curv = true
             verbose &&println("negative curvature encountered ",iter," CG iterations.")
@@ -137,7 +137,7 @@ function cgTN{T <: Real}(A :: LinearOperator, b :: Array{T,1};
             γ_next = BLAS.dot(n, r, 1, r, 1);
             rNorm = sqrt(γ);
             push!(rNorms, rNorm);
-            
+
             solved = (rNorm <= ε) ;
             tired = iter >= itmax;
         end

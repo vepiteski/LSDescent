@@ -1,6 +1,6 @@
 export Newarmijo_wolfe
 
-function Newarmijo_wolfe(h :: C1LineFunction2,
+function Newarmijo_wolfe(h :: LineModel,
                          h₀ :: Float64,
                          slope :: Float64,
                          g :: Array{Float64,1};
@@ -66,5 +66,5 @@ function Newarmijo_wolfe(h :: C1LineFunction2,
     verboseLS && @printf("  %4d %4d %8e\n", nbk, nbW, t);
     stalled = (nbk == bk_max)
     @assert (t > 0.0) && (!isnan(t)) "invalid step"
-    return (t, t, good_grad, ht, nbk, nbW, stalled,h.f_eval,h.g_eval,h.h_eval)
+    return (t, t, good_grad, ht, nbk, nbW, stalled)#,h.f_eval,h.g_eval,h.h_eval)
 end

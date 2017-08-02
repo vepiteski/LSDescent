@@ -5,9 +5,6 @@ export ALL_solvers, STOP_solvers
 using NLPModels
 using Optimize
 
-include("line_functions2.jl")
-
-
 using LinearOperators
 
 using PyPlot
@@ -16,7 +13,7 @@ using Stopping
 
 include("armijo_wolfe.jl")
 
-AbstractLineFunction = Union{C1LineFunction,C2LineFunction}
+# AbstractLineFunction = Union{C1LineFunction,C2LineFunction}
 ALL_solvers = Function[]
 STOP_solvers = Function[]
 
@@ -47,26 +44,7 @@ include("NewtonCG.jl")
 include("Newton.jl")
 push!(ALL_solvers,Newton)
 
-include("Stopping/CG_FRS.jl")
-include("Stopping/CG_genericS.jl")
-include("Stopping/CG_HSS.jl")
-include("Stopping/CG_HZS.jl")
-include("Stopping/CG_PRS.jl")
-include("Stopping/lbfgsS.jl")
-include("Stopping/NewtonS.jl")
-include("Stopping/steepestS.jl")
-
 include("BFGS_Jo.jl")
-
-
-push!(STOP_solvers,NewlbfgsS)
-push!(STOP_solvers,CG_FRS)
-push!(STOP_solvers,CG_PRS)
-push!(STOP_solvers,CG_HSS)
-push!(STOP_solvers,CG_HZS)
-
-push!(STOP_solvers,NewtonS)
-
 
 using LineSearch, LineSearches
 

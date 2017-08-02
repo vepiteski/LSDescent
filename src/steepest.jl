@@ -1,70 +1,91 @@
 export steepest
 
 function steepest(nlp :: AbstractNLPModel;
-                  atol :: Float64=1.0e-8, rtol :: Float64=1.0e-6,
-                  max_eval :: Int = 5000,
-                  max_iter :: Int = 20000,
+                  stp :: TStopping = TStopping(),
                   verbose :: Bool=true,
-                  mem :: Int=5,
+                  verboseLS :: Bool = false,
                   linesearch :: Function = Newarmijo_wolfe,
                   kwargs...)
 
-  x = copy(nlp.meta.x0)
-  n = nlp.meta.nvar
+    x = copy(nlp.meta.x0)
+    n = nlp.meta.nvar
 
-  xt = Array(Float64, n)
-  ∇ft = Array(Float64, n)
+    # xt = Array(Float64, n)
+    # ∇ft = Array(Float64, n)
+    xt = Array{Float64}(n)
+    ∇ft = Array{Float64}(n)
 
-  f = obj(nlp, x)
-  ∇f = grad(nlp, x)
+    f = obj(nlp, x)
 
-  ∇fNorm = BLAS.nrm2(n, ∇f, 1)
-  ϵ = atol + rtol * ∇fNorm
-  max_eval == 0 && (max_eval = max(min(100, 2 * n), 5000))
-  iter = 0
+    iter = 0
 
-  verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")
-  verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
+    #∇f = grad(nlp, x)
+    s, ∇f = start!(nlp,stp,x)
 
-  optimal = ∇fNorm <= ϵ
-  tired = nlp.counters.neval_obj + nlp.counters.neval_grad > max_eval
+    verbose && @printf("%4s  %8s  %7s  %8s  %4s\n", "iter", "f", "‖∇f‖", "∇f'd", "bk")
+    verbose && @printf("%4d  %8.1e  %7.1e", iter, f, norm(∇f))
 
-  while !(optimal || tired)
-    d = - ∇f
-    slope = BLAS.dot(n, d, 1, ∇f, 1)
-    slope < 0.0 || error("Not a descent direction! slope = ", slope)
+    optimal, unbounded, tired, elapsed_time = stop(nlp,stp,iter,x,f,∇f)
 
-    verbose && @printf("  %8.1e", slope)
+    OK = true
+    stalled_linesearch = false
+    stalled_ascent_dir = false
 
-    # Perform improved Armijo linesearch.
-    if linesearch in Newton_linesearch
-      h = C2LineFunction(nlp, x, d)
-    else
-      h = C1LineFunction(nlp, x, d)
+    h_f = 0; h_g = 0; h_h = 0
+
+    while (OK && !(optimal || tired || unbounded))
+        d = - ∇f
+        slope = ∇f ⋅ d
+        if slope > 0.0
+            stalled_ascent_dir = true
+            #println("Not a descent direction! slope = ", slope)
+        else
+            verbose && @printf("  %8.1e", slope)
+
+            # Perform linesearch.
+            if iter < 1
+              h = LineModel(nlp, x, d)
+            else
+              h = Optimize.redirect!(h, x, d)
+            end
+
+            verboseLS && println(" ")
+
+            h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
+            t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch = linesearch(h, f, slope, ∇ft; verboseLS = verboseLS, kwargs...)
+            h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
+
+            if linesearch in interfaced_algorithms
+              ft = obj(nlp, x + (t)*d)
+              nlp.counters.neval_obj += -1
+            end
+            #!stalled_linesearch || println("Max number of Armijo backtracking ",nbk)
+            verbose && @printf("  %4d\n", nbk)
+
+            xt = x + t*d
+            good_grad || (∇ft = grad!(nlp, xt, ∇ft))
+
+            # Move on.
+            x = xt
+            f = ft
+            ∇f = ∇ft
+            iter = iter + 1
+
+            verbose && @printf("%4d  %8.1e  %7.1e", iter, f, norm(∇f))
+
+            optimal, unbounded, tired, elapsed_time = stop(nlp,stp,iter,x,f,∇f)
+        end
+        OK = !stalled_linesearch & !stalled_ascent_dir
     end
-    t, good_grad, ft, nbk, nbW = linesearch(h, f, slope, ∇ft, verbose=false; kwargs...)
+    verbose && @printf("\n")
 
-    verbose && @printf("  %4d\n", nbk)
 
-    BLAS.blascopy!(n, x, 1, xt, 1)
-    BLAS.axpy!(n, t, d, 1, xt, 1)
-    good_grad || (∇ft = grad!(nlp, xt, ∇ft))
+    if optimal status = :Optimal
+    elseif unbounded status = :Unbounded
+    elseif stalled_linesearch status = :StalledLinesearch
+    elseif stalled_ascent_dir status = :StalledAscentDir
+    else status = :UserLimit
+    end
 
-    # Move on.
-    x = xt
-    f = ft
-    BLAS.blascopy!(n, ∇ft, 1, ∇f, 1)
-    # norm(∇f) bug: https://github.com/JuliaLang/julia/issues/11788
-    ∇fNorm = BLAS.nrm2(n, ∇f, 1)
-    iter = iter + 1
-
-    verbose && @printf("%4d  %8.1e  %7.1e", iter, f, ∇fNorm)
-
-    optimal = ∇fNorm <= ϵ
-    tired = nlp.counters.neval_obj + nlp.counters.neval_grad > max_eval
-  end
-  verbose && @printf("\n")
-
-  status = tired ? "maximum number of evaluations" : "first-order stationary"
-  return (x, f, ∇fNorm, iter, optimal, tired, status)
+    return (x, f, s.optimality_residual(∇f), iter, optimal, tired, status, h_f, h_g, h_h)
 end
