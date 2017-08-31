@@ -28,10 +28,12 @@ nlp = MathProgNLPModel(woods(), name="woods")
 
 nbsolver = 0
 @printf("Testing Stopping solvers\n\n")
-for solver in STOP_solvers
+using Stopping
+s = TStopping(rtol=0.0, max_eval = 500000, max_iter = 100000, max_time = 10.0)
+for solver in ALL_solvers
     nbsolver += 1
     println(nbsolver,"  ",solver)
-    (x, f, gNorm, iter, optimal, tired, status) = solver(nlp, verbose=false)
+    (x, f, gNorm, iter, optimal, tired, status) = solver(nlp, verbose=false, stp=s)
     @printf("%-15s  %8d  %9.2e  %7.1e  %5d  %5d  %6d  %s\n",
             nlp.meta.name, nlp.meta.nvar, f, gNorm,
             nlp.counters.neval_obj, nlp.counters.neval_grad,

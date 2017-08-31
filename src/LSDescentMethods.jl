@@ -4,15 +4,15 @@ export ALL_solvers, STOP_solvers
 
 using NLPModels
 using Optimize
+#include("../test/line_model.jl")
 
 using LinearOperators
 
-using PyPlot
+#using PyPlot
 
 using Stopping
 
 include("armijo_wolfe.jl")
-
 # AbstractLineFunction = Union{C1LineFunction,C2LineFunction}
 ALL_solvers = Function[]
 STOP_solvers = Function[]
@@ -35,15 +35,23 @@ include("HessianDense.jl")
 include("NewtonSpectralAbs.jl")
 include("NewtonLDLtAbs.jl")
 #using HSL
-include("HessianSparse.jl")
+#include("HessianSparse.jl")
 #include("NewtonMA57Abs.jl")
 include("HessianOp.jl")
 
 include("cgTN.jl")
-include("NewtonCG.jl")
 include("Newton.jl")
-push!(ALL_solvers,Newton)
+include("NewtonCG.jl")
+push!(ALL_solvers,NewtonCG)
 
+include("NewtonSpectralAbs.jl")
+push!(ALL_solvers,NewtonSpectralAbs)
+
+include("NewtonLDLtAbs.jl")
+push!(ALL_solvers,NewtonLDLtAbs)
+
+include("steepest.jl")
+push!(ALL_solvers,steepest)
 include("BFGS_Jo.jl")
 
 using LineSearch, LineSearches

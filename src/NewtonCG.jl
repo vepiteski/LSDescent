@@ -1,4 +1,4 @@
-export NwtdirectionCG
+export NwtdirectionCG, NewtonCG
 
 function NwtdirectionCG(H,∇f;verbose::Bool=false)
     e=1e-6
@@ -13,3 +13,5 @@ function NwtdirectionCG(H,∇f;verbose::Bool=false)
     
     return d
 end
+
+NewtonCG = Newton

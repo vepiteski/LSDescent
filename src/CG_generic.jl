@@ -78,7 +78,7 @@ function CG_generic(nlp :: AbstractNLPModel;
         t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch = linesearch(h, f, slope * scale, ∇ft; verboseLS = verboseLS, debug = debug, kwargs...)
         h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
 
-        if linesearch in interfaced_algorithms
+        if linesearch in interfaced_ls_algorithms
           ft = obj(nlp, x + (t*scale)*d)
           nlp.counters.neval_obj += -1
         end

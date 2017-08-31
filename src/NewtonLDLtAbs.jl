@@ -1,11 +1,11 @@
-export NwtdirectionLDLt
+export NwtdirectionLDLt, NewtonLDLtAbs
 
 include("ldlt_symm.jl")
 
 function NwtdirectionLDLt(H,g;verbose::Bool=false)
-    L = Array(Float64,2)
-    D = Array(Float64,2)
-    pp = Array(Int,1)
+    L = Array{Float64}(2)
+    D = Array{Float64}(2)
+    pp = Array{Int}(1)
     ρ = Float64
     ncomp = Int64
     
@@ -21,7 +21,7 @@ function NwtdirectionLDLt(H,g;verbose::Bool=false)
 
     # A[pp,pp] = P*A*P' =  L*D*L'
 
-    if true in isnan(D) 
+    if true in isnan.(D) 
  	println("*******   Problem in D from LDLt: NaN")
         println(" cond (H) = $(cond(H))")
         #res = PDataLDLt()
@@ -33,7 +33,7 @@ function NwtdirectionLDLt(H,g;verbose::Bool=false)
     Δ, Q = eig(D)
 
     ϵ2 =  1.0e-8
-    Γ = max(abs(Δ),ϵ2)
+    Γ = max.(abs.(Δ),ϵ2)
 
     # Ad = P'*L*Q*Δ*Q'*L'*Pd =    -g
     # replace Δ by Γ to ensure positive definiteness
@@ -45,3 +45,20 @@ function NwtdirectionLDLt(H,g;verbose::Bool=false)
 end
 
 
+function NewtonLDLtAbs(nlp :: AbstractNLPModel;
+                       stp :: TStopping=TStopping(),
+                       verbose :: Bool=false,
+                       verboseLS :: Bool = false,
+                       linesearch :: Function = Newarmijo_wolfe,
+                       kwargs...)
+    return  Newton(nlp;
+                   stp = stp,
+                   verbose = verbose,
+                   verboseLS = verboseLS,
+                   linesearch = linesearch,
+                   Nwtdirection = NwtdirectionLDLt,
+                   hessian_rep = hessian_dense,
+                   kwargs...)
+end
+
+    
