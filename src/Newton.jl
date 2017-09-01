@@ -5,7 +5,6 @@ function Newton(nlp :: AbstractNLPModel;
                 verbose :: Bool=false,
                 verboseLS :: Bool = false,
                 verboseCG :: Bool = false,
-                mem :: Int=5,
                 linesearch :: Function = Newarmijo_wolfe,
                 Nwtdirection :: Function = NwtdirectionCG,
                 hessian_rep :: Function = hessian_operator,
