@@ -3,7 +3,7 @@ using LinearOperators
 
 
 "Abstract type for statistics returned by a solver"
-abstract type KrylovStats end;
+@compat abstract type KrylovStats end;
 
 "Type for statistics returned by non-Lanczos solvers"
 type SimpleStats <: KrylovStats
