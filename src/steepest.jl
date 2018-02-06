@@ -31,7 +31,7 @@ function steepest(nlp :: AbstractNLPModel;
     stalled_linesearch = false
     stalled_ascent_dir = false
 
-    h_f = 0; h_g = 0; h_h = 0
+    h = LineModel(nlp, x, - ∇f)
 
     while (OK && !(optimal || tired || unbounded))
         d = - ∇f
@@ -43,17 +43,11 @@ function steepest(nlp :: AbstractNLPModel;
             verbose && @printf("  %8.1e", slope)
 
             # Perform linesearch.
-            if iter < 1
-              h = LineModel(nlp, x, d)
-            else
-              h = Optimize.redirect!(h, x, d)
-            end
+            h = Optimize.redirect!(h, x, d)
 
             verboseLS && println(" ")
 
-            h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
             t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch = linesearch(h, f, slope, ∇ft; verboseLS = verboseLS, kwargs...)
-            h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
 
             if linesearch in interfaced_ls_algorithms
               ft = obj(nlp, x + (t)*d)
@@ -87,5 +81,5 @@ function steepest(nlp :: AbstractNLPModel;
     else status = :UserLimit
     end
 
-    return (x, f, s.optimality_residual(∇f), iter, optimal, tired, status, h_f, h_g, h_h)
+    return (x, f, s.optimality_residual(∇f), iter, optimal, tired, status, h.counters.neval_obj, h.counters.neval_grad, h.counters.neval_hess)
 end

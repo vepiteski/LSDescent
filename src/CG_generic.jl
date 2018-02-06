@@ -14,8 +14,6 @@ function CG_generic(nlp :: AbstractNLPModel;
     x = copy(nlp.meta.x0)
     n = nlp.meta.nvar
 
-    # xt = Array(Float64, n)
-    # ∇ft = Array(Float64, n)
     xt = Array{Float64}(n)
     ∇ft = Array{Float64}(n)
 
@@ -41,11 +39,11 @@ function CG_generic(nlp :: AbstractNLPModel;
     d = zeros(∇f)
     scale = 1.0
 
+    h = LineModel(nlp, x, d*scale)
+
     OK = true
     stalled_linesearch = false
     stalled_ascent_dir = false
-
-    h_f = 0; h_g = 0; h_h = 0
 
     while (OK && !(optimal || tired || unbounded) )
         d = - ∇f + β*d
@@ -58,30 +56,18 @@ function CG_generic(nlp :: AbstractNLPModel;
         # #else
         verbose && @printf(" %10.1e", slope*scale)
 
-        # Perform linesearch.
-        if iter < 1
-          h = LineModel(nlp, x, d*scale)
-        else
-          h = Optimize.redirect!(h, x, d*scale)
-        end
+        h = Optimize.redirect!(h, x, d*scale)
 
         debug = false
 
-        if print_h && (iter == print_h_iter)
-          debug= true
-          graph_linefunc(h, f, slope*scale;kwargs...)
-        end
-
         verboseLS && println(" ")
 
-        h_f_init = copy(nlp.counters.neval_obj); h_g_init = copy(nlp.counters.neval_grad); h_h_init = copy(nlp.counters.neval_hprod)
         t, t_original, good_grad, ft, nbk, nbW, stalled_linesearch = linesearch(h, f, slope * scale, ∇ft; verboseLS = verboseLS, debug = debug, kwargs...)
-        h_f += copy(copy(nlp.counters.neval_obj) - h_f_init); h_g += copy(copy(nlp.counters.neval_grad) - h_g_init); h_h += copy(copy(nlp.counters.neval_hprod) - h_h_init)
 
-        if linesearch in interfaced_ls_algorithms
-          ft = obj(nlp, x + (t*scale)*d)
-          nlp.counters.neval_obj += -1
-        end
+        # if linesearch in interfaced_ls_algorithms
+        #   ft = obj(nlp, x + (t*scale)*d)
+        #   nlp.counters.neval_obj += -1
+        # end
 
         t *= scale
         if verboseLS
@@ -137,5 +123,5 @@ function CG_generic(nlp :: AbstractNLPModel;
     else status = :UserLimit
     end
 
-    return (x, f, stp.optimality_residual(∇f), iter, optimal, tired, status, h_f, h_g, h_h)
+    return (x, f, stp.optimality_residual(∇f), iter, optimal, tired, status, h.counters.neval_obj, h.counters.neval_grad, h.counters.neval_hess)
 end
