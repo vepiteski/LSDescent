@@ -9,38 +9,22 @@ using JuMP
 include("woods.jl")
 nlp = MathProgNLPModel(woods(), name="woods")
 
-#nbsolver = 0
-#@printf("Testing all solvers\n\n")
-#for solver in ALL_solvers
-#    nbsolver += 1
-#    println(nbsolver,"  ",solver)
-#    (x, f, gNorm, iter, optimal, tired, status) = solver(nlp, verbose=false)
-#    @printf("%-15s  %8d  %9.2e  %7.1e  %5d  %5d  %6d  %s\n",
-#            nlp.meta.name, nlp.meta.nvar, f, gNorm,
-#            nlp.counters.neval_obj, nlp.counters.neval_grad,
-#            nlp.counters.neval_hprod, status)    
-
-#    #stats = run_solver(solver, model, verbose=false)
-#    #@test (all([stats...] .>= 0))
-#    @test optimal
-#    reset!(nlp)
-#end
 
 nbsolver = 0
-@printf("Testing Stopping solvers\n\n")
-using Stopping
-s = TStopping(rtol=0.0, max_eval = 500000, max_iter = 100000, max_time = 10.0)
-for solver in ALL_solvers
-    nbsolver += 1
-    println(nbsolver,"  ",solver)
-    (x, f, gNorm, iter, optimal, tired, status) = solver(nlp, verbose=false, stp=s)
-    @printf("%-15s  %8d  %9.2e  %7.1e  %5d  %5d  %6d  %s\n",
-            nlp.meta.name, nlp.meta.nvar, f, gNorm,
-            nlp.counters.neval_obj, nlp.counters.neval_grad,
-            nlp.counters.neval_hprod, status)    
+@printf("Testing Stopping Newton solvers\n\n")
 
-    #stats = run_solver(solver, model, verbose=false)
-    #@test (all([stats...] .>= 0))
-    @test optimal
-    reset!(nlp)
-end
+using Stopping
+
+println("\n Newton-spectral Stopping,  ")
+stp = NLPStopping(nlp, NLPAtX(nlp.meta.x0)  )
+stp.meta.optimality_check = unconstrained_check
+stp.meta.max_iter = maxiter
+stp.meta.rtol = 0
+
+#include("Newton/NewtonStop.jl")
+using LSDescent
+
+stp = Newton_Stop(nlp, stp = stp);
+@show stp.meta.nb_of_stop, norm(stp.current_state.gx), stp.current_state.fx
+@show nlp.counters
+
