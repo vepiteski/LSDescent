@@ -1,4 +1,4 @@
-using LSDescentMethods
+using LSDescent
 
 using Base.Test
 using NLPModels
@@ -22,7 +22,6 @@ stp.meta.max_iter = maxiter
 stp.meta.rtol = 0
 
 #include("Newton/NewtonStop.jl")
-using LSDescent
 
 stp = Newton_Stop(nlp, stp = stp);
 @show stp.meta.nb_of_stop, norm(stp.current_state.gx), stp.current_state.fx
