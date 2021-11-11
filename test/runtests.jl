@@ -25,7 +25,7 @@ stp.meta.optimality_check = unconstrained_check
 stp.meta.max_iter = maxiter
 stp.meta.rtol = 0
 
-(stp, B) = Newton_Stop(nlp, stp = stp);
+stp = Newton_Stop(nlp, stp = stp);
 @show stp.meta.nb_of_stop, norm(stp.current_state.gx), stp.current_state.fx
 @show nlp.counters
 
