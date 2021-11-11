@@ -27,11 +27,10 @@ end
 #
 
 using Stopping
-#include("stopping/NLPAtXUnc.jl")  #  temporaire, en attendant une version optimisée de stopping
 
 println("\n bfgs Stopping,  ")
 stp = NLPStopping(nlp, NLPAtX(nlp.meta.x0)  )
-stp.meta.optimality_check = unconstrained_checkU
+stp.meta.optimality_check = unconstrained_check
 stp.meta.max_iter = maxiter
 stp.meta.rtol = 0  
 using LSDescent
