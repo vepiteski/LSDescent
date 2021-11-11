@@ -2,6 +2,9 @@ module LSDescentMethods
 
 export  bfgs_StopLS, L_bfgs_StopLS, Newton_StopLS, Newton_Stop
 
+using LinearAlgebra
+
+
 using NLPModels
 using OneDmin
 
