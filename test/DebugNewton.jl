@@ -23,6 +23,10 @@ stp2.meta.rtol = 0
 reset!(nlp)
 reinit!(stp)
 
+
+
+using Logging
+
 let stp = stp
     logger = Logging.ConsoleLogger(stderr,Logging.Warn)
     Logging.with_logger(logger) do # execute twice to eliminate compilation time randomness
@@ -135,7 +139,6 @@ logger = Logging.ConsoleLogger(stderr,Logging.Warn)
 # Plain implementation, no Stopping, simplified Armijo (Wolfe) linesearch
 #
 
-using Logging
 
 logger = Logging.ConsoleLogger(stderr,Logging.Warn)
 Logging.with_logger(logger) do # execute twice to eliminate compilation time randomness
