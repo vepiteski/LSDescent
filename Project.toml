@@ -11,7 +11,7 @@ NLPModels = "a4795742-8479-5a88-8948-cc11e1c8c1a6"
 OneDmin = "e4273c13-0309-4fa6-90e5-406c07af81ee"
 Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
 SolverCore = "ff4d7338-4cf1-434d-91df-b86cb86fb843"
-#SolverTools = "b5612192-2639-5dc1-abfe-fbedd65fab29"
+SolverTools = "b5612192-2639-5dc1-abfe-fbedd65fab29"
 Stopping = "c4fe5a9e-e7fb-5c3d-89d5-7f405ab2214f"
 
 
