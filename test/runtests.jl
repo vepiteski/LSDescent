@@ -15,18 +15,9 @@ nlp = MathOptNLPModel(woods(), name="woods")
 nbsolver = 0
 
 maxiter = 100
-println("Testing Stopping Newton solvers\n\n")
+println("Testing bfgs solvers\n\n")
+include("Debugbfgs.jl")
 
-using Stopping
 
-println("\n Newton-spectral Stopping,  ")
-stp = NLPStopping(nlp, NLPAtX(nlp.meta.x0)  )
-stp.meta.optimality_check = unconstrained_check
-stp.meta.max_iter = maxiter
-stp.meta.rtol = 0
-
-stp = Newton_Stop(nlp, stp = stp);
-@show stp.meta.nb_of_stop, norm(stp.current_state.gx), stp.current_state.fx
-@show nlp.counters
-
+println("Testing Newton solvers\n\n")
 include("DebugNewton.jl")
