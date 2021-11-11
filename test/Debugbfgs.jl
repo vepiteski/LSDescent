@@ -27,7 +27,7 @@ end
 #
 
 using Stopping
-include("stopping/NLPAtXUnc.jl")  #  temporaire, en attendant une version optimisée de stopping
+#include("stopping/NLPAtXUnc.jl")  #  temporaire, en attendant une version optimisée de stopping
 
 println("\n bfgs Stopping,  ")
 stp = NLPStopping(nlp, NLPAtX(nlp.meta.x0)  )
