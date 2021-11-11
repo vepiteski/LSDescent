@@ -7,7 +7,7 @@ using JuMP
 
 # test all solvers with the well known Woods test function
 include("woods.jl")
-nlp = MathProgNLPModel(woods(), name="woods")
+nlp = MathOptNLPModel(woods(), name="woods")
 
 
 nbsolver = 0
