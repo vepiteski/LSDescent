@@ -9,6 +9,8 @@ nlp = MathOptNLPModel(woods(), name="woods")
 
 
 nbsolver = 0
+
+maxiter = 100
 println("Testing Stopping Newton solvers\n\n")
 
 using Stopping
