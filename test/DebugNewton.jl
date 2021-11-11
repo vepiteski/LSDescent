@@ -1,3 +1,4 @@
+using Logging
 
 #
 # Plain implementation, no Stopping, simplified Armijo (Wolfe) linesearch
@@ -43,9 +44,6 @@ stp2.meta.rtol = 0
 reset!(nlp)
 reinit!(stp)
 
-
-
-using Logging
 
 let stp = stp
     logger = Logging.ConsoleLogger(stderr,Logging.Warn)
