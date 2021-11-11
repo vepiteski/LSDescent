@@ -9,7 +9,7 @@ nlp = MathOptNLPModel(woods(), name="woods")
 
 
 nbsolver = 0
-@printf("Testing Stopping Newton solvers\n\n")
+println("Testing Stopping Newton solvers\n\n")
 
 using Stopping
 
