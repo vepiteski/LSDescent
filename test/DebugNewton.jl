@@ -3,22 +3,6 @@ Pkg.activate("stopping")
 
 using LinearAlgebra
 
-using OptimizationProblems
-using NLPModelsJuMP
-using NLPModels
-
-using SolverTools   # Pour avoir les utilitaires d'affichage log_header et log_row
-
-#include("selectJuMP.jl")  #  Sélection du problème à tester
-include("selectCute.jl")  #  Sélection du problème à tester
-nlp2 = nlp
-
-
-println("\n Newton-spectral test,  ")
-include("Newton/NewtonSolver.jl")
-
-maxiter = 2000
-
 
 #
 # Plain implementation, no Stopping, simplified Armijo (Wolfe) linesearch
