@@ -1,9 +1,7 @@
 using LSDescent
 
 using Test
-using NLPModels
-using JuMP
-
+using NLPModels, JuMP,  NLPModelsJuMP
 
 # test all solvers with the well known Woods test function
 include("woods.jl")
