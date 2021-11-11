@@ -12,6 +12,7 @@ stp.meta.optimality_check = unconstrained_check
 stp.meta.max_iter = maxiter
 stp.meta.rtol = 0
 
+nlp2 = nlp
 stp2 = NLPStopping(nlp2, NLPAtX(nlp.meta.x0)  )
 stp2.meta.optimality_check = unconstrained_check
 stp2.meta.max_iter = maxiter
@@ -21,8 +22,6 @@ stp2.meta.rtol = 0
 
 reset!(nlp)
 reinit!(stp)
-
-include("Newton/NewtonStop.jl")
 
 let stp = stp
     logger = Logging.ConsoleLogger(stderr,Logging.Warn)
@@ -46,8 +45,6 @@ end
 #
 # Stopping implementation, line search by 1D enhanced interval reduction
 #
-
-include("Newton/NewtonStopLS.jl")
 
 using OneDmin
 
