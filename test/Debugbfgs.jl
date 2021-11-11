@@ -11,12 +11,12 @@ maxiter = 1450
 using Logging
 
 logger = Logging.ConsoleLogger(stderr,Logging.Warn)
-Logging.with_logger(logger) do # execute twice to eliminate compilation time randomness
+Logging.with_logger(logger) do 
     # comment the definition of B₀ and in the call to have "regular" BFGS
     # use B₀ to hage L-BFGS
-    # B₀ =  InverseLBFGSOperator(Float64, n, mem, scaling=scaling)
+     B₀ =  InverseLBFGSOperator(Float64, n, mem, scaling=scaling)
     
-    @time  iter, fopt, gopt = bfgs(nlp, maxiter = maxiter, scaling = scaling) # , B₀ = B₀);
+    @time  iter, fopt, gopt = bfgs(nlp, maxiter = maxiter, scaling = scaling , B₀ = B₀);
     @show iter, (gopt), fopt
 end
 
@@ -36,7 +36,7 @@ stp.meta.rtol = 0
 using LSDescent
 
 let stp = stp; #nlp = nlp
-    logger = Logging.ConsoleLogger(stderr,Logging.Info)
+    logger = Logging.ConsoleLogger(stderr,Logging.Warn)
     Logging.with_logger(logger) do # execute twice to eliminate compilation time randomness
         reset!(nlp)
         # comment the definition of B₀ and in the call to have "regular" BFGS
