@@ -6,6 +6,8 @@ using NLPModels
 using OneDmin
 
 using LinearOperators
+using Logging
+using SolverTools   # Pour avoir les utilitaires d'affichage log_header et log_row
 
 using Stopping
 
