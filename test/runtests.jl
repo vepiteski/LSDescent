@@ -1,6 +1,6 @@
 using LSDescent
 
-using Base.Test
+using Test
 using NLPModels
 using JuMP
 
