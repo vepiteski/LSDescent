@@ -16,6 +16,7 @@ using Stopping
 
 include("Newton/NewtonStopLS.jl")
 include("Newton/NewtonStop.jl")
+include("Newton/NewtonSolver.jl")
 include("BFGS/bfgsStop.jl")
 include("BFGS/bfgsStopLS.jl")
 include("BFGS/FormuleN2.jl")
