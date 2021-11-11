@@ -4,7 +4,7 @@ using Test
 using NLPModels, JuMP,  NLPModelsJuMP
 
 using SolverTools
-using SolverCore
+
 using LinearAlgebra
 
 # test all solvers with the well known Woods test function
