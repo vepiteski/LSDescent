@@ -10,11 +10,12 @@ maxiter = 1450
 
 using Logging
 
+using LinearOperators
+
 logger = Logging.ConsoleLogger(stderr,Logging.Warn)
 Logging.with_logger(logger) do 
     # comment the definition of B₀ and in the call to have "regular" BFGS
     # use B₀ to hage L-BFGS
-    using LinearOperators
     B₀ =  InverseLBFGSOperator(Float64, n, mem, scaling=scaling)
     
     @time  iter, fopt, gopt = bfgs(nlp, maxiter = maxiter, scaling = scaling , B₀ = B₀);
