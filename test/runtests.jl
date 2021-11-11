@@ -3,7 +3,7 @@ using LSDescent
 using Test
 using NLPModels, JuMP,  NLPModelsJuMP
 
-using Solver_Tools
+using SolverTools
 using LinearAlgebra
 
 # test all solvers with the well known Woods test function
