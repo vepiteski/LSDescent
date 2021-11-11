@@ -1,12 +1,32 @@
 
 #
+# Plain implementation, no Stopping, simplified Armijo (Wolfe) linesearch
+#
+
+println("\n Newton-spectral plain with simple Armijo LineSearch  ")
+
+logger = Logging.ConsoleLogger(stderr,Logging.Warn)
+Logging.with_logger(logger) do # execute twice to eliminate compilation time randomness
+    @time iter, fopt, gopt = Newton_Spectral(nlp, maxiter = maxiter)
+
+    reset!(nlp)
+    @time iter, fopt, gopt = Newton_Spectral(nlp, maxiter = maxiter)
+    @show iter, (fopt), gopt
+end
+
+@show nlp.counters
+
+finalize(nlp)
+
+
+#
 # Stopping implementation, simplified Armijo (Wolfe) linesearch
 #
 
 
 using Stopping
 
-println("\n Newton-spectral Stopping,  ")
+println("\n Newton-spectral Stopping, Armijo LS  ")
 stp = NLPStopping(nlp, NLPAtX(nlp.meta.x0)  )
 stp.meta.optimality_check = unconstrained_check
 stp.meta.max_iter = maxiter
@@ -134,21 +154,3 @@ logger = Logging.ConsoleLogger(stderr,Logging.Warn)
 
 @show nlp.counters
 
-
-#
-# Plain implementation, no Stopping, simplified Armijo (Wolfe) linesearch
-#
-
-
-logger = Logging.ConsoleLogger(stderr,Logging.Warn)
-Logging.with_logger(logger) do # execute twice to eliminate compilation time randomness
-    @time iter, fopt, gopt = Newton_Spectral(nlp, maxiter = maxiter)
-
-    reset!(nlp)
-    @time iter, fopt, gopt = Newton_Spectral(nlp, maxiter = maxiter)
-    @show iter, (fopt), gopt
-end
-
-@show nlp.counters
-
-finalize(nlp)
