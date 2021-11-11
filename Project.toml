@@ -2,3 +2,6 @@ name = "LSDescent"
 uuid = "3db7effa-7fbd-41ca-a1c1-b4268ffa528a"
 authors = ["vepiteski <vepiteski@gmail.com>"]
 version = "0.1.0"
+
+[deps]
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
