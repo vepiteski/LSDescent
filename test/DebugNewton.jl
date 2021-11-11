@@ -1,22 +1,5 @@
 
 #
-# Plain implementation, no Stopping, simplified Armijo (Wolfe) linesearch
-#
-
-using Logging
-
-logger = Logging.ConsoleLogger(stderr,Logging.Warn)
-Logging.with_logger(logger) do # execute twice to eliminate compilation time randomness
-    @time iter, fopt, gopt = Newton_Spectral(nlp, maxiter = maxiter)
-
-    reset!(nlp)
-    @time iter, fopt, gopt = Newton_Spectral(nlp, maxiter = maxiter)
-    @show iter, (fopt), gopt
-end
-
-@show nlp.counters
-
-#
 # Stopping implementation, simplified Armijo (Wolfe) linesearch
 #
 
@@ -150,5 +133,22 @@ logger = Logging.ConsoleLogger(stderr,Logging.Warn)
 
 @show nlp.counters
 
+
+#
+# Plain implementation, no Stopping, simplified Armijo (Wolfe) linesearch
+#
+
+using Logging
+
+logger = Logging.ConsoleLogger(stderr,Logging.Warn)
+Logging.with_logger(logger) do # execute twice to eliminate compilation time randomness
+    @time iter, fopt, gopt = Newton_Spectral(nlp, maxiter = maxiter)
+
+    reset!(nlp)
+    @time iter, fopt, gopt = Newton_Spectral(nlp, maxiter = maxiter)
+    @show iter, (fopt), gopt
+end
+
+@show nlp.counters
 
 finalize(nlp)
