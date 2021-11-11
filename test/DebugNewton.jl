@@ -1,8 +1,3 @@
-using Pkg
-Pkg.activate("stopping")
-
-using LinearAlgebra
-
 
 #
 # Plain implementation, no Stopping, simplified Armijo (Wolfe) linesearch
