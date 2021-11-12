@@ -9,8 +9,25 @@ maxiter = 1450
 #
 
 using Logging
+println("\n bfgs with Armijo line search,  ")
+
+logger = Logging.ConsoleLogger(stderr,Logging.Warn)
+Logging.with_logger(logger) do 
+    # comment the definition of B₀ and in the call to have "regular" BFGS
+    # use B₀ to hage L-BFGS
+    B₀ =  InverseLBFGSOperator(Float64, n, mem=mem, scaling=scaling)
+    
+    @time  iter, fopt, gopt = bfgs(nlp, maxiter = maxiter, scaling = scaling , B₀ = B₀);
+    @show iter, (gopt), fopt
+end
+
+@show nlp.counters
+
+# to compare plain BFGS as implemented by L-BFGS
+mem = iter + 1
 
 using LinearOperators
+println("\n L-bfgs with Armijo line search,  ")
 
 logger = Logging.ConsoleLogger(stderr,Logging.Warn)
 Logging.with_logger(logger) do 
