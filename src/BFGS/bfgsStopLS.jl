@@ -51,7 +51,8 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
         fail_sub_pb = ~ϕstp.meta.optimal
                 
         # Update BFGS approximation.
-        B = push!(B, t * d, ∇ft - ∇f, scaling)
+        B = push!(B, t * d, ∇ft - ∇f)
+        #B = push!(B, t * d, ∇ft - ∇f, scaling)
 
         #move on
         x .= xt

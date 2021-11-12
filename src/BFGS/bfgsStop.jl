@@ -68,7 +68,8 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
         if t!=tw   ∇ft = grad(nlp, xt) end
 
         # Update BFGS approximation.
-        B = push!(B, t * d, ∇ft - ∇f, scaling)
+        B = push!(B, t * d, ∇ft - ∇f)
+        #B = push!(B, t * d, ∇ft - ∇f, scaling)
 
         #move on
         x .= xt
