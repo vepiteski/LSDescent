@@ -2,9 +2,10 @@ import Base.push!
 
 function push!(B :: Union{UniformScaling{T},Matrix{T}},
                sk:: Vector{T},
-               yk:: Vector{T},
-               scaling :: Bool = true) where T
-    
+               yk:: Vector{T}) where T,
+#               scaling :: Bool = true) where T
+
+    scaling = true
     denom = yk'*sk
     if (denom > 1.0e-20) 
         #self-scaled version aka Luenberger
