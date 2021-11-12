@@ -15,6 +15,9 @@ n = nlp.meta.nvar
 nbsolver = 0
 
 maxiter = 100
+
+mem = 5
+
 println("Testing bfgs solvers\n\n")
 include("Debugbfgs.jl")
 
