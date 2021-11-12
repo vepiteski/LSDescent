@@ -12,6 +12,7 @@ using Logging
 println("\n bfgs with Armijo line search,  ")
 
 logger = Logging.ConsoleLogger(stderr,Logging.Warn)
+iter = 0
 Logging.with_logger(logger) do 
     # comment the definition of B₀ and in the call to have "regular" BFGS
     # use B₀ to hage L-BFGS
