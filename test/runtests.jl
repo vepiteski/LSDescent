@@ -10,7 +10,7 @@ using LinearAlgebra
 # test all solvers with the well known Woods test function
 include("woods.jl")
 nlp = MathOptNLPModel(woods(), name="woods")
-
+n = nlp.meta.nvar
 
 nbsolver = 0
 
