@@ -1,6 +1,6 @@
 
 
-scaling = true
+scaling = false #true
 maxiter = 1450
 
 
