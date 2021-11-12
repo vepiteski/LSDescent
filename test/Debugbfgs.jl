@@ -1,6 +1,6 @@
 
 
-scaling = true
+scaling = false # true
 maxiter = 1450
 
 
@@ -25,7 +25,7 @@ end
 @show nlp.counters
 
 # to compare plain BFGS as implemented by L-BFGS
-mem = 41
+mem = 401
 
 using LinearOperators
 println("\n L-bfgs with Armijo line search, mem = $mem ")
