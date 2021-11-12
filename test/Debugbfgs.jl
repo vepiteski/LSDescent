@@ -28,10 +28,11 @@ end
 mem = iter + 1
 
 using LinearOperators
-println("\n L-bfgs with Armijo line search,  ")
+println("\n L-bfgs with Armijo line search, mem = $mem ")
 
 logger = Logging.ConsoleLogger(stderr,Logging.Warn)
 Logging.with_logger(logger) do 
+    reset!(nlp)
     # comment the definition of B₀ and in the call to have "regular" BFGS
     # use B₀ to hage L-BFGS
     B₀ =  InverseLBFGSOperator(Float64, n, mem=mem, scaling=scaling)
