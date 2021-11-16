@@ -1,6 +1,8 @@
 module LSDescent
 
-export bfgs, bfgs_Stop, bfgs_StopLS, L_bfgs_StopLS, Newton_StopLS, Newton_Stop, Newton_Spectral
+export bfgs, bfgs_Stop, bfgs_StopLS
+export L_bfgs, L_bfgs_Stop, L_bfgs_StopLS
+export Newton_StopLS, Newton_Stop, Newton_Spectral
 
 using LinearAlgebra
 
