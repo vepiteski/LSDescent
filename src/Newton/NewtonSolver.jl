@@ -2,7 +2,8 @@ function Newton_Spectral(nlp     :: AbstractNLPModel;
                          x       :: AbstractVector=copy(nlp.meta.x0),
                          ϵ       :: Real=√eps(eltype(x)),
                          #ϵ       :: T = 1e-6,
-                         maxiter :: Int = 200
+                         maxiter :: Int = 200,
+                         Lp      :: Real = 2 # norm Lp 
                          )# where T<:Real
 
     T = eltype(x)
@@ -16,9 +17,9 @@ function Newton_Spectral(nlp     :: AbstractNLPModel;
     τ₁ = 0.999
 
     iter = 0
-    @info log_row(Any[iter, f, norm(∇f)])  
+    @info log_row(Any[iter, f, norm(∇f, Lp)])  
 
-    while (norm(∇f, Inf) > ϵ) && (iter <= maxiter)
+    while (norm(∇f, Lp) > ϵ) && (iter <= maxiter)
         H = Matrix(Symmetric(hess(nlp, x),:L))
         Δ, O = eigen(H)
         # Boost negative values of Δ to 1e-8
@@ -67,10 +68,10 @@ function Newton_Spectral(nlp     :: AbstractNLPModel;
         ∇f = ∇ft
         iter += 1
         
-        @info log_row(Any[iter, f, norm(∇f), t, hp0])
+        @info log_row(Any[iter, f, norm(∇f, Lp), t, hp0])
     end
     if iter > maxiter @warn "Maximum d'itérations"
     end
     
-    return iter, f, norm(∇f)
+    return iter, f, norm(∇f, Lp), x
 end
