@@ -107,21 +107,21 @@ stats, iter, f, g = test_noStp(bfgs, nlp, scaling = true, maxiter = maxiter, Lp 
 
 println("\n L-bfgs   ")
 
-
+mem = 50
 reset!(nlp)
 reinit!(stp)
 
-stats, stp = test_Stp(L_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B)
+stats, stp = test_Stp(L_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, mem = mem)
 
-@info log_row(Any["bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
+@info log_row(Any["L-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
 @test norm(stp.current_state.gx, Inf) < 1e-6
 
 reset!(nlp)
 reinit!(stp)
 
-stats, stp = test_Stp(L_bfgs_Stop, nlp, stp=stp)
+stats, stp = test_Stp(L_bfgs_Stop, nlp, stp=stp, mem = mem)
 
-@info log_row(Any["bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
+@info log_row(Any["L-bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
 @test norm(stp.current_state.gx, Inf) < 1e-6
 
 
@@ -144,11 +144,11 @@ function test_noStp(algo::Function, nlp; kwargs...) where T
 end
 
 
-stats, iter, f, g = test_noStp(L_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf)
+stats, iter, f, g = test_noStp(L_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf, mem = mem)
 
 
 
-@info log_row(Any["bfgs", stats.time,  iter, f, g])
+@info log_row(Any["L-bfgs", stats.time,  iter, f, g])
 @test g < 1e-6
 
 
