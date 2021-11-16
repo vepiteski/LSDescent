@@ -3,24 +3,20 @@ using LSDescent
 using Test
 using NLPModels, JuMP,  NLPModelsJuMP
 
-using SolverTools
+using SolverCore, Logging
 
 using LinearAlgebra
 
 # test all solvers with the well known Woods test function
 include("woods.jl")
-nlp = MathOptNLPModel(woods(), name="woods")
+nlp = MathOptNLPModel(woods(40), name="woods")
 n = nlp.meta.nvar
 
-nbsolver = 0
+include("tests.jl")
 
-maxiter = 100
-
-mem = 5
-
-println("Testing bfgs solvers\n\n")
-include("Debugbfgs.jl")
+#println("Testing bfgs solvers\n\n")
+#include("Debugbfgs.jl")
 
 
-println("Testing Newton solvers\n\n")
-include("DebugNewton.jl")
+#println("Testing Newton solvers\n\n")
+#include("DebugNewton.jl")

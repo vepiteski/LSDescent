@@ -3,6 +3,8 @@ module LSDescent
 export bfgs, bfgs_Stop, bfgs_StopLS
 export L_bfgs, L_bfgs_Stop, L_bfgs_StopLS
 export Newton_StopLS, Newton_Stop, Newton_Spectral
+export CG_generic, CG_FR, CG_PR, CG_Hs, CG_HZ
+export formula_FR, formula_PR, formula_HS, formula_HZ
 
 using LinearAlgebra
 
@@ -24,6 +26,14 @@ include("BFGS/bfgsStop.jl")
 include("BFGS/bfgsStopLS.jl")
 include("BFGS/FormuleN2.jl")
 
+include("ConjugateGradient/CG_generic.jl")
 
+
+include("ConjugateGradient/CG_FR.jl")
+include("ConjugateGradient/CG_PR.jl")
+include("ConjugateGradient/CG_HS.jl")
+include("ConjugateGradient/CG_HZ.jl")
+
+include("ConjugateGradient/formulae.jl")
 
 end # module
