@@ -1,3 +1,4 @@
+maxiter = 1000
 
 using Stopping
 
