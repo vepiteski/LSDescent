@@ -107,7 +107,7 @@ stats, iter, f, g = test_noStp(bfgs, nlp, scaling = true, maxiter = maxiter, Lp 
 
 println("\n L-bfgs   ")
 
-mem = 50
+mem = 70
 reset!(nlp)
 reinit!(stp)
 
