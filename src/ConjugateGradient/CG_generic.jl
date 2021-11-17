@@ -19,8 +19,7 @@ function CG_generic(nlp       :: AbstractNLPModel;
     
     n = nlp.meta.nvar
     
-    f = obj(nlp,x)
-    ∇f = grad(nlp, x)
+    f, ∇f = objgrad(nlp, x)
     
     xt = similar(x)
     ∇ft = similar(∇f)
@@ -31,13 +30,12 @@ function CG_generic(nlp       :: AbstractNLPModel;
     ϕ, ϕstp = prepare_LS(stp, x, ∇f, τ₀, f, ∇f)
     
     OK = update_and_start!(stp, x = x, fx = f, gx = ∇f)
-    update_and_stop!(stp,  x = x, fx = f, gx = ∇f)
+
     @info log_row(Any[0, f, norm(∇f)])
     
     β = 0.0
     d = zeros(n)
     scale = 1.0
-    
     
     while !OK
         d = - ∇f + β*d
@@ -71,13 +69,10 @@ function CG_generic(nlp       :: AbstractNLPModel;
         f = ft
         ∇f .= ∇ft
 
-        
         if fail_sub_pb
-            OK = true
             stp.meta.fail_sub_pb = true
-        else
-            OK = update_and_stop!(stp, x = x, gx = ∇f, fx = f)
         end
+        OK = update_and_stop!(stp, x = x, gx = ∇f, fx = f)
         
         @info log_row(Any[stp.meta.nb_of_stop, f, norm(∇f), t, ϕ.counters.neval_obj])
     end
@@ -89,5 +84,3 @@ function CG_generic(nlp       :: AbstractNLPModel;
     
     return stp
 end
-
-
