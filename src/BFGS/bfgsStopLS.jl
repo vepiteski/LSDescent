@@ -50,23 +50,22 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
         t, xt, ft, ∇ft = linesearch(ϕ, ϕstp, x, d, f, ∇f, τ₀, τ₁, logger = LS_logger, algo = LS_algo; kwargs...)
         fail_sub_pb = ~ϕstp.meta.optimal
                 
-        # Update BFGS approximation.
-        B = push!(B, t * d, ∇ft - ∇f)
-        #B = push!(B, t * d, ∇ft - ∇f, scaling)
-
-        #move on
-        x .= xt
-        f = ft
-        ∇f .= ∇ft
-
-        
         if fail_sub_pb
             OK = true
             stp.meta.fail_sub_pb = true
         else
+            # Update BFGS approximation.
+            B = push!(B, t * d, ∇ft - ∇f)
+            #B = push!(B, t * d, ∇ft - ∇f, scaling)
+            
+            #move on
+            x .= xt
+            f = ft
+            ∇f .= ∇ft
+            
             OK = update_and_stop!(stp, x = x, gx = ∇f, fx = f)
         end
-        
+        # norm(∇f) == stp.current_state.current_score
         @info log_row(Any[stp.meta.nb_of_stop, f, norm(∇f), t, ϕ.counters.neval_obj])
     end
     

@@ -3,6 +3,8 @@ maxiter = 1000
 using Stopping
 
 stp = NLPStopping(nlp, NLPAtX(nlp.meta.x0)  )
+# to do    my_unconstrained_check(nlp, st; kwargs...) = unconstrained_check(nlp, st, pnorm = Lp; kwargs...)
+# to do    unconstrained_check1(nlp, st; kwargs...) = unconstrained_check(nlp, st, pnorm = 1; kwargs...)
 stp.meta.optimality_check = unconstrained_check
 stp.meta.max_iter = maxiter
 stp.meta.rtol = 0  
