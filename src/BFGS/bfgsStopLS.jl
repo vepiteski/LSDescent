@@ -8,7 +8,6 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
                      stp       :: NLPStopping = NLPStopping(nlp,
                                                       NLPAtX(nlp.meta.x0)),
                      scaling   :: Bool = true,
-                     Lp        :: Real = 2.0, # norm Lp 
                      LS_algo   :: Function = bracket,
                      LS_logger :: AbstractLogger = Logging.NullLogger(),
                      B₀        :: Union{AbstractLinearOperator,
@@ -18,8 +17,6 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
                      kwargs...      # eventually options for the line search
                      ) where T
     
-    my_unconstrained_check(nlp, st; kwargs...) = unconstrained_check(nlp, st, pnorm = Lp; kwargs...)
-    stp.meta.optimality_check = my_unconstrained_check
     
     @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
