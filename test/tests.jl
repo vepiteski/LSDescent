@@ -66,7 +66,7 @@ println("\n bfgs   ")
 
 reset!(nlp)
 reinit!(stp)
-Lp = 2
+Lp = 2.0
 stats, stp = test_Stp(bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, Lp = Lp)
 
 @info log_row(Any["bfgsSLS-L2", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
