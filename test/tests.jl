@@ -69,7 +69,15 @@ reinit!(stp)
 Lp = 2
 stats, stp = test_Stp(bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, Lp = Lp)
 
-@info log_row(Any["bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@info log_row(Any["bfgsSLS-L2", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test norm(stp.current_state.gx, Lp) < 1e-6
+
+reset!(nlp)
+reinit!(stp)
+Lp = Inf
+stats, stp = test_Stp(bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, Lp = Lp)
+
+@info log_row(Any["bfgsSLS-L∞", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
 @test norm(stp.current_state.gx, Lp) < 1e-6
 
 reset!(nlp)

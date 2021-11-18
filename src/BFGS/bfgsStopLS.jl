@@ -67,7 +67,7 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
             
             OK = update_and_stop!(stp, x = x, gx = ∇f, fx = f)
         end
-        norm∇f == stp.current_state.current_score
+        norm∇f = stp.current_state.current_score
         @info log_row(Any[stp.meta.nb_of_stop, f, norm∇f, t, ϕ.counters.neval_obj])
     end
     
