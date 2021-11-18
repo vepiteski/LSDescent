@@ -19,6 +19,7 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
                      ) where T
     
     my_unconstrained_check(nlp, st; kwargs...) = unconstrained_check(nlp, st, pnorm = Lp; kwargs...)
+    stp.meta.optimality_check = my_unconstrained_check
     
     @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
