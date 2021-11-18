@@ -7,7 +7,7 @@ function CG_PR(nlp :: AbstractNLPModel;
                scaling   :: Bool = true,
                LS_algo   :: Function = bracket{T},
                LS_logger :: AbstractLogger = Logging.NullLogger(),
-               kwargs...)
+               kwargs...) where T
 
     return CG_generic(nlp;
                       x = x,
