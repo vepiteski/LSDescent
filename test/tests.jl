@@ -51,7 +51,7 @@ stats, stp = test_Stp(CG_HZ, nlp, stp=stp, scaling = false, strongWolfe = true, 
 reset!(nlp)
 reinit!(stp)
 
-stats, stp = test_Stp(CG_generic, nlp, stp=stp, scaling = false, strongWolfe = true, LS_algo=bracket_N, CG_formula=formula_HS)
+stats, stp = test_Stp(CG_HS, nlp, stp=stp, scaling = false, strongWolfe = true, LS_algo=bracket_N)
 
 @info log_row(Any["CG_HS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
 @test stp.current_state.current_score < 1e-6
@@ -59,7 +59,7 @@ stats, stp = test_Stp(CG_generic, nlp, stp=stp, scaling = false, strongWolfe = t
 reset!(nlp)
 reinit!(stp)
 
-stats, stp = test_Stp(CG_generic, nlp, stp=stp, scaling = false, strongWolfe = true, LS_algo=bracket_N, CG_formula=formula_PR)
+stats, stp = test_Stp(CG_PR, nlp, stp=stp, scaling = false, strongWolfe = true, LS_algo=bracket_N)
 
 @info log_row(Any["CG_PR", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
 @test stp.current_state.current_score < 1e-6
