@@ -29,10 +29,10 @@ include("BFGS/FormuleN2.jl")
 include("ConjugateGradient/CG_generic.jl")
 include("ConjugateGradient/formulae.jl")
 
-#include("ConjugateGradient/CG_FR.jl")
-#include("ConjugateGradient/CG_PR.jl")
-#include("ConjugateGradient/CG_HS.jl")
-#include("ConjugateGradient/CG_HZ.jl")
+include("ConjugateGradient/CG_FR.jl")
+include("ConjugateGradient/CG_PR.jl")
+include("ConjugateGradient/CG_HS.jl")
+include("ConjugateGradient/CG_HZ.jl")
 
 
 end # module
