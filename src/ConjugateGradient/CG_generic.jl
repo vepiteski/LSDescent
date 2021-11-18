@@ -31,7 +31,7 @@ function CG_generic(nlp       :: AbstractNLPModel;
     ϕ, ϕstp = prepare_LS(stp, x, ∇f, τ₀, f, ∇f)
     
     OK = update_and_start!(stp, x = x, fx = f, gx = ∇f)
-    update_and_stop!(stp,  x = x, fx = f, gx = ∇f)
+    #update_and_stop!(stp,  x = x, fx = f, gx = ∇f)
     @info log_row(Any[0, f, norm(∇f)])
     
     β = 0.0
@@ -54,28 +54,28 @@ function CG_generic(nlp       :: AbstractNLPModel;
         t, xt, ft, ∇ft = linesearch(ϕ, ϕstp, x, d*scale, f, ∇f, τ₀, τ₁, logger = LS_logger, algo = LS_algo; kwargs...)
         fail_sub_pb = ~ϕstp.meta.optimal
                 
-        #move on
-        s = xt - x
-        y = ∇ft - ∇f
-        β = 0.0
-        #if (∇ft⋅∇f) < 0.75 * (∇ft⋅∇ft)   # Powell restart
-            β = CG_formula(∇f,∇ft,s,d)
-        #end
-        if scaling
-            scale = (y⋅s) / (y⋅y)
-        end
-        if scale <= 0.0
-            scale = 1.0
-        end
-        x .= xt
-        f = ft
-        ∇f .= ∇ft
-
+        
         
         if fail_sub_pb
             OK = true
             stp.meta.fail_sub_pb = true
         else
+            #move on
+            s = xt - x
+            y = ∇ft - ∇f
+            β = 0.0
+            #if (∇ft⋅∇f) < 0.75 * (∇ft⋅∇ft)   # Powell restart
+            β = CG_formula(∇f,∇ft,s,d)
+            #end
+            if scaling
+                scale = (y⋅s) / (y⋅y)
+            end
+            if scale <= 0.0
+                scale = 1.0
+            end
+            x .= xt
+            f = ft
+            ∇f .= ∇ft
             OK = update_and_stop!(stp, x = x, gx = ∇f, fx = f)
         end
         
