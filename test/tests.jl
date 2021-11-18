@@ -9,7 +9,7 @@ Lp = Inf
 my_unconstrained_check(nlp, st; kwargs...) = unconstrained_check(nlp, st, pnorm = Lp; kwargs...)
 stp.meta.optimality_check = my_unconstrained_check
 
-stp.meta.optimality_check = unconstrained_check
+#stp.meta.optimality_check = unconstrained_check
 stp.meta.max_iter = maxiter
 stp.meta.rtol = 0  
 
