@@ -5,7 +5,7 @@ function CG_HZ(nlp :: AbstractNLPModel;
                stp :: NLPStopping = NLPStopping(nlp,
                                                 NLPAtX(nlp.meta.x0)),
                scaling   :: Bool = true,
-               LS_algo   :: Function = bracket{T},
+               LS_algo   :: Function = bracket,
                LS_logger :: AbstractLogger = Logging.NullLogger(),
                kwargs...) where T
 
