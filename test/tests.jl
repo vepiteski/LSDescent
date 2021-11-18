@@ -33,32 +33,32 @@ println("\n CG   ")
 
 stats, stp = test_Stp(CG_generic, nlp, stp=stp, scaling = false, strongWolfe = true, LS_algo=bracket_N, CG_formula=formula_HZ)
 
-@info log_row(Any["CG_HZ", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["CG_HZ", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
 reset!(nlp)
 reinit!(stp)
 
 stats, stp = test_Stp(CG_generic, nlp, stp=stp, scaling = false, strongWolfe = true, LS_algo=bracket_N, CG_formula=formula_HS)
 
-@info log_row(Any["CG_HS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["CG_HS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
 reset!(nlp)
 reinit!(stp)
 
 stats, stp = test_Stp(CG_generic, nlp, stp=stp, scaling = false, strongWolfe = true, LS_algo=bracket_N, CG_formula=formula_PR)
 
-@info log_row(Any["CG_PR", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["CG_PR", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
 reset!(nlp)
 reinit!(stp)
 
 stats, stp = test_Stp(CG_generic, nlp, stp=stp, scaling = true, strongWolfe = true, LS_algo=bracket_N, CG_formula=formula_FR)
 
-@info log_row(Any["CG_FR", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["CG_FR", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
 
 println("\n bfgs   ")
@@ -66,19 +66,22 @@ println("\n bfgs   ")
 
 reset!(nlp)
 reinit!(stp)
+Lp = 2
+stats, stp = test_Stp(bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, Lp = Lp)
 
-stats, stp = test_Stp(bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B)
-
-@info log_row(Any["bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test norm(stp.current_state.gx, Lp) < 1e-6
 
 reset!(nlp)
 reinit!(stp)
 
 stats, stp = test_Stp(bfgs_Stop, nlp, stp=stp)
 
-@info log_row(Any["bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
+
+
 
 
 reset!(nlp)
@@ -115,16 +118,16 @@ reinit!(stp)
 
 stats, stp = test_Stp(L_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, mem = mem)
 
-@info log_row(Any["L-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["L-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
 reset!(nlp)
 reinit!(stp)
 
 stats, stp = test_Stp(L_bfgs_Stop, nlp, stp=stp, mem = mem)
 
-@info log_row(Any["L-bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["L-bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
 
 reset!(nlp)
@@ -163,8 +166,8 @@ reinit!(stp)
 
 stats, stp = test_Stp(Newton_StopLS, nlp, stp=stp)
 
-@info log_row(Any["NwtSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["NwtSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
 
 reset!(nlp)
@@ -172,8 +175,8 @@ reinit!(stp)
 
 stats, stp = test_Stp(Newton_Stop, nlp, stp=stp)
 
-@info log_row(Any["NwtS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, norm(stp.current_state.gx, Inf)])
-@test norm(stp.current_state.gx, Inf) < 1e-6
+@info log_row(Any["NwtS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
 
 reset!(nlp)
