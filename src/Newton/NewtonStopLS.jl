@@ -59,5 +59,5 @@ function Newton_StopLS(nlp :: AbstractNLPModel;
         @warn status(stp, list=true)
     end
     
-    return tuple(stp)
+    return stp
 end
