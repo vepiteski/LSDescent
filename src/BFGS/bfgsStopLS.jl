@@ -86,7 +86,7 @@ function L_bfgs_StopLS(nlp :: AbstractNLPModel;
                                                         NLPAtX(nlp.meta.x0)),
                        mem :: Int = 5,
                        scaling :: Bool = true,
-                       LS_algo   :: Function = bracket,
+                       LS_algo   :: Function = bracket_B,
                        LS_logger :: AbstractLogger = Logging.NullLogger(),
                        kwargs...      # eventually options for the line search
                        ) where T
