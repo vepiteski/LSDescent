@@ -8,7 +8,7 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
                      stp       :: NLPStopping = NLPStopping(nlp,
                                                       NLPAtX(nlp.meta.x0)),
                      scaling   :: Bool = true,
-                     LS_algo   :: Function = bracket,
+                     LS_algo   :: Function = bracket_B,
                      LS_logger :: AbstractLogger = Logging.NullLogger(),
                      B₀        :: Union{AbstractLinearOperator,
                                         AbstractMatrix,
