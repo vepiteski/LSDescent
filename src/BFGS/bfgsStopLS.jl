@@ -35,10 +35,11 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
     τ₀ = 0.0005
     τ₁ = 0.9999
     
-    ϕ, ϕstp = prepare_LS(stp, x, ∇f, τ₀, f, ∇f)
+#    ϕ, ϕstp = prepare_LS(stp, x, ∇f, τ₀, f, ∇f)
 
     OK = update_and_start!(stp, x = x, fx = f, gx = ∇f)
     #update_and_stop!(stp,  x = x, fx = f, gx = ∇f)
+    ϕ, ϕstp = prepare_LS(stp, x, ∇f, τ₀, f, ∇f)
     @info log_row(Any[0, f, norm(∇f)])
 
     while !OK
