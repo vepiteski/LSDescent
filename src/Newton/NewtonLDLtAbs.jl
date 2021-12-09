@@ -1,4 +1,4 @@
-export NwtdirectionLDLt, NewtonLDLtAbs
+export NwtdirectionLDLt, NewtonLDLtAbsLS
 
 include("ldlt_symm.jl")
 
