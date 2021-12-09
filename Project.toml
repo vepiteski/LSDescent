@@ -4,16 +4,17 @@ authors = ["vepiteski <vepiteski@gmail.com>"]
 version = "0.1.1"
 
 [deps]
-Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 LinearOperators = "5c8ed15e-5a4c-59e4-a42b-c7e8811fb125"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 NLPModels = "a4795742-8479-5a88-8948-cc11e1c8c1a6"
 OneDmin = "e4273c13-0309-4fa6-90e5-406c07af81ee"
 Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
 SolverCore = "ff4d7338-4cf1-434d-91df-b86cb86fb843"
 SolverTools = "b5612192-2639-5dc1-abfe-fbedd65fab29"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Stopping = "c4fe5a9e-e7fb-5c3d-89d5-7f405ab2214f"
-
 
 [extras]
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
@@ -21,4 +22,4 @@ NLPModelsJuMP = "792afdf1-32c1-5681-94e0-d7bf7a5df49e"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["NLPModelsJuMP", "JuMP","Test"]
+test = ["NLPModelsJuMP", "JuMP", "Test"]
