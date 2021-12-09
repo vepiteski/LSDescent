@@ -25,6 +25,11 @@ include("Newton/NewtonSolver.jl")
 export Newton_G_StopLS, Newton_G_Stop
 include("Newton/Newton_G_StopLS.jl")
 include("Newton/Newton_G_Stop.jl")
+
+include("Newton/HessianDense.jl")
+include("Newton/HessianOp.jl")
+include("Newton/HessianSparse.jl")
+
 include("Newton/NewtonSpectralAbs.jl")
 
 
