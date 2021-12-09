@@ -32,6 +32,13 @@ include("Newton/HessianSparse.jl")
 
 include("Newton/NewtonSpectralAbs.jl")
 
+include("Newton/ldlt_symm.jl")
+export ldlt_symm
+include("Newton/NewtonLDLtAbs.jl")
+include("Newton/NewtonCG.jl")
+
+
+
 
 include("BFGS/bfgsSolver.jl")
 include("BFGS/bfgsStop.jl")
