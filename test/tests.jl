@@ -209,9 +209,26 @@ stats, stp = test_Stp(NewtonSpectralAbs, nlp, stp=stp)
 reset!(nlp)
 reinit!(stp)
 
+stats, stp = test_Stp(NewtonSpectralAbs, nlp, stp=stp, scale_abs = false)
+
+@info log_row(Any["Nwt_spec", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
+
+reset!(nlp)
+reinit!(stp)
+
 stats, stp = test_Stp(NewtonLDLtAbsLS, nlp, stp=stp)
 
 @info log_row(Any["Nwt_LDLt_abs", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(NewtonLDLtAbsLS, nlp, stp=stp, scale_abs = false)
+
+@info log_row(Any["Nwt_LDLt", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
 @test stp.current_state.current_score < 1e-6
 
 reset!(nlp)
