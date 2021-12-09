@@ -5,6 +5,7 @@ function NwtdirectionSpectral(H, ∇f; scale_abs :: Bool = true)
     # Boost negative values of Δ to 1e-8
     # devise an adaptative value for γ
     γ = 1e-6
+    n = length(Δ)
     if scale_abs   
         #D = abs.(Δ) + max.((γ .- abs.(Δ)), 0.0) .*ones(n)
         D = max.(abs.(Δ), γ) .*ones(n)
