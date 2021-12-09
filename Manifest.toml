@@ -209,6 +209,12 @@ git-tree-sha1 = "de9c69c0862be0e11afe5d4aa3426af1d7ecac2c"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
 version = "0.22.1"
 
+[[Krylov]]
+deps = ["LinearAlgebra", "Printf", "SparseArrays"]
+git-tree-sha1 = "0f47f7a2ecb7f8c4df6d258fd2268b56e62ab17c"
+uuid = "ba0b0d4f-ebba-5204-a429-3ac8c609bfb7"
+version = "0.7.9"
+
 [[LLSModels]]
 deps = ["NLPModels", "NLPModelsModifiers", "SparseArrays"]
 git-tree-sha1 = "316011e6ee63996ee67a59f4b1d017c51b05f90a"
