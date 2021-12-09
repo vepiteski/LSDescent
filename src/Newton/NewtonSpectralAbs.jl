@@ -8,9 +8,9 @@ function NwtdirectionSpectral(H, ∇f; scale_abs :: Bool = true)
     n = length(Δ)
     if scale_abs   
         #D = abs.(Δ) + max.((γ .- abs.(Δ)), 0.0) .*ones(n)
-        D = max.(abs.(Δ), γ) .*ones(n)
+        D = max.(abs.(Δ), γ)
     else
-        D = max.(Δ, γ) .*ones(n)
+        D = max.(Δ, γ)
     end
     d = - O*diagm(1.0 ./ D)*O'*∇f
     #Δ = ones(g)
