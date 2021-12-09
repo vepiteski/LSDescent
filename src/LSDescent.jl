@@ -21,6 +21,13 @@ using Stopping
 include("Newton/NewtonStopLS.jl")
 include("Newton/NewtonStop.jl")
 include("Newton/NewtonSolver.jl")
+
+export Newton_G_StopLS, Newton_G_Stop
+include("Newton/Newton_G_StopLS.jl")
+include("Newton/Newton_G_Stop.jl")
+include("Newton/NewtonSpectralAbs.jl")
+
+
 include("BFGS/bfgsSolver.jl")
 include("BFGS/bfgsStop.jl")
 include("BFGS/bfgsStopLS.jl")

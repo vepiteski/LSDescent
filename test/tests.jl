@@ -194,8 +194,15 @@ reset!(nlp)
 
 stats, iter, f, g = test_noStp(Newton_Spectral, nlp,  maxiter = maxiter, Lp = Inf, ϵ = 1e-6)
 
-
 @info log_row(Any["Nwt", stats.time,  iter, f, g])
 @test g < 1e-6
 
+
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(NewtonSpectralAbs, nlp, stp=stp)
+
+@info log_row(Any["Nwt_spec_abs", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
