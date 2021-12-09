@@ -27,6 +27,20 @@ function test_Stp(algo::Function, nlp; kwargs...) where T
     return stats, stp
 end
 
+function test_noStp(algo::Function, nlp; kwargs...) where T
+
+    stats = @timed bidon=0
+    iter=0
+    f=0.0
+    normg=0.0
+    logger = Logging.ConsoleLogger(stderr,Logging.Warn)
+    Logging.with_logger(logger) do 
+        stats = @timed iter, f, normg, B = algo(nlp; kwargs...)
+    end
+        
+    return stats, iter, f, normg
+end
+
 
 using Test
 @info log_header([:name, :time, :iter, :f, :dual], [String, Float64, Int, Float64, Float64],
@@ -112,28 +126,14 @@ stats, stp = test_Stp(bfgs_Stop, nlp, stp=stp)
 
 reset!(nlp)
 
-
-function test_noStp(algo::Function, nlp; kwargs...) where T
-
-    stats = @timed bidon=0
-    iter=0
-    f=0.0
-    normg=0.0
-    logger = Logging.ConsoleLogger(stderr,Logging.Warn)
-    Logging.with_logger(logger) do 
-        stats = @timed iter, f, normg, B = algo(nlp; kwargs...)
-    end
-        
-    return stats, iter, f, normg
-end
-
-
 stats, iter, f, g = test_noStp(bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf)
 
 
 
 @info log_row(Any["bfgs", stats.time,  iter, f, g])
 @test g < 1e-6
+
+
 
 
 println("\n L-bfgs   ")
@@ -158,29 +158,14 @@ stats, stp = test_Stp(L_bfgs_Stop, nlp, stp=stp, mem = mem)
 
 reset!(nlp)
 
-
-
-function test_noStp(algo::Function, nlp; kwargs...) where T
-
-    stats = @timed bidon=0
-    iter=0
-    f=0.0
-    normg=0.0
-    logger = Logging.ConsoleLogger(stderr,Logging.Warn)
-    Logging.with_logger(logger) do 
-        stats = @timed iter, f, normg, B = algo(nlp; kwargs...)
-    end
-        
-    return stats, iter, f, normg
-end
-
-
 stats, iter, f, g = test_noStp(L_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf, mem = mem)
 
 
 
 @info log_row(Any["L-bfgs", stats.time,  iter, f, g])
 @test g < 1e-6
+
+
 
 
 println("\n Newton   ")
@@ -207,25 +192,10 @@ stats, stp = test_Stp(Newton_Stop, nlp, stp=stp)
 
 reset!(nlp)
 
-function test_noStp(algo::Function, nlp; kwargs...) where T
-
-    stats = @timed bidon=0
-    iter=0
-    f=0.0
-    normg=0.0
-    logger = Logging.ConsoleLogger(stderr,Logging.Warn)
-    Logging.with_logger(logger) do 
-        stats = @timed iter, f, normg = algo(nlp; kwargs...)
-    end
-        
-    return stats, iter, f, normg
-end
-
-
 stats, iter, f, g = test_noStp(Newton_Spectral, nlp,  maxiter = maxiter, Lp = Inf, ϵ = 1e-6)
-
 
 
 @info log_row(Any["Nwt", stats.time,  iter, f, g])
 @test g < 1e-6
+
 
