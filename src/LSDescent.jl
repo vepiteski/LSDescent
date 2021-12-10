@@ -46,6 +46,10 @@ include("BFGS/bfgsStop.jl")
 include("BFGS/bfgsStopLS.jl")
 include("BFGS/FormuleN2.jl")
 
+include("BFGS/Type.jl")
+include("BFGS/FormuleN2Op.jl")
+
+
 include("ConjugateGradient/CG_generic.jl")
 include("ConjugateGradient/formulae.jl")
 

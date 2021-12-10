@@ -1,5 +1,7 @@
 using FastClosures
 
+export BFGSdata, BFGSOperator, InverseBFGSOperator
+
 mutable struct BFGSData{T}
     M :: Matrix{T}
     scaling::Bool

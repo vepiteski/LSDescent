@@ -99,6 +99,7 @@ function L_bfgs_StopLS(nlp :: AbstractNLPModel;
     return bfgs_StopLS(nlp; x=x, stp=stp, scaling=scaling, LS_logger=LS_logger, LS_algo=LS_algo, B₀=B₀, kwargs...)
 end
 
+
 """ M-BFGS wrapper of the gereral BFGS implementation. M == Matrix
 """
 function M_bfgs_StopLS(nlp :: AbstractNLPModel;
