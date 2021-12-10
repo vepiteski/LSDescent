@@ -1,21 +1,19 @@
 import Base.push!
 
-function push!(B :: Union{UniformScaling{T},Matrix{T}},
+function push!(Bop :: BFGSOperator{T, N, F1, F2, F3},
                sk:: Vector{T},
-               yk:: Vector{T}) where T
-#               scaling :: Bool = true) where T
+               yk:: Vector{T}) where {T, N, F1, F2, F3}
 
-    scaling = false
-    denom = yk'*sk
+    scaling = Bop.data.scaling
+    denom = yk'*sk 
+    B = Bop.data.M
     if (denom > 1.0e-20) 
         #self-scaled version aka Luenberger
 
         #divide vector yk by denom 
         By = B*(yk/denom)
 
-        ytBy = (yk'*By) # inspired by Luenberger
-        #ytBy = (yk'*yk)  # similar to L-BFGS
-
+        ytBy = (yk'*By)
         γ = 1.0
         if scaling
             γ = T(1) / (ytBy)
@@ -43,7 +41,9 @@ function push!(B :: Union{UniformScaling{T},Matrix{T}},
         @warn "No update,  denom = ", denom
         #B = Matrix(eltype(yk).(I(length(yk))))
     end
+
+    Bop.data.M .= B
     
-    return B
+    return Bop
 end
 

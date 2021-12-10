@@ -105,7 +105,7 @@ reset!(nlp)
 reinit!(stp)
 Lp = Inf
 my_unconstrained_check(nlp, st; kwargs...) = unconstrained_check(nlp, st, pnorm = Lp; kwargs...)
-stp.meta.optimality_check = my_unconstrained_check
+stp.meta.optimtrueality_check = my_unconstrained_check
 
 stats, stp = test_Stp(bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B)
 
@@ -163,6 +163,36 @@ stats, iter, f, g = test_noStp(L_bfgs, nlp, scaling = true, maxiter = maxiter, L
 
 
 @info log_row(Any["L-bfgs", stats.time,  iter, f, g])
+@test g < 1e-6
+
+
+println("\n M-bfgs   ")
+
+mem = 70
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(M_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, mem = mem)
+
+@info log_row(Any["M-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(M_bfgs_Stop, nlp, stp=stp, mem = mem)
+
+@info log_row(Any["M-bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
+
+reset!(nlp)
+
+stats, iter, f, g = test_noStp(M_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf, mem = mem)
+
+
+
+@info log_row(Any["M-bfgs", stats.time,  iter, f, g])
 @test g < 1e-6
 
 

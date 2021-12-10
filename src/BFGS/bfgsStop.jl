@@ -30,7 +30,7 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
     @info log_row(Any[0, f, norm(∇f)])
     
     while !OK
-        d = - B*∇f
+        d = - (B*∇f)
 
         #------------------------------------------
         # Hard coded line search
@@ -106,6 +106,26 @@ function L_bfgs_Stop(nlp     :: AbstractNLPModel;
     @debug "U_Solver = L_bfgs"
     n = nlp.meta.nvar
     B₀ =  InverseLBFGSOperator(Float64, n, mem=mem, scaling=scaling)
+    
+    return bfgs_Stop(nlp; x=x, stp = stp, scaling=scaling, B₀=B₀, kwargs...)
+end
+
+
+
+""" M-BFGS wrapper of the gereral BFGS implementation. M == Matrix
+"""
+function M_bfgs_Stop(nlp     :: AbstractNLPModel;
+                     x       :: Vector{T}=copy(nlp.meta.x0),
+                     stp :: NLPStopping = NLPStopping(nlp,
+                                                      NLPAtX(nlp.meta.x0)),
+                     mem     :: Int = 5,
+                     scaling :: Bool = true,
+                     kwargs...
+                     ) where T
+
+    @debug "U_Solver = M_bfgs"
+    n = nlp.meta.nvar
+    B₀ =  InverseBFGSOperator(Float64, n, mem=mem, scaling=scaling)
     
     return bfgs_Stop(nlp; x=x, stp = stp, scaling=scaling, B₀=B₀, kwargs...)
 end

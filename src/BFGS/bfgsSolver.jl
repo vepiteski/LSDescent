@@ -23,7 +23,8 @@ function bfgs(nlp     :: AbstractNLPModel;
         B = B₀
     end
     B₀ = B
-    
+    #@show typeof(B)
+    #@show B
     τ₀ = 0.0005
     τ₁ = 0.9999
 
@@ -31,7 +32,7 @@ function bfgs(nlp     :: AbstractNLPModel;
     @info log_row(Any[iter, f, norm(∇f)])  
 
     while (norm(∇f, Lp) > ϵ) && (iter <= maxiter)
-        d = - B*∇f
+        d = - (B*∇f) 
 
         #------------------------------------------
         # Hard coded line search
@@ -82,7 +83,9 @@ function bfgs(nlp     :: AbstractNLPModel;
         @info log_row(Any[iter, ft, norm(∇ft, Lp), t, hp0])
     end
     
-    if iter > maxiter @warn "Maximum d'itérations"
+    if iter > maxiter
+        @warn "Maximum d'itérations"
+        #@show B.data.M
     end
     
     return iter, f, norm(∇f, Lp), B, x
@@ -104,6 +107,26 @@ function L_bfgs(nlp     :: AbstractNLPModel;
     @debug "U_Solver = L_bfgs"
     n = nlp.meta.nvar
     B₀ =  InverseLBFGSOperator(Float64, n, mem=mem, scaling=scaling)
+    
+    return bfgs(nlp; x=x, ϵ = ϵ, maxiter = maxiter, scaling=scaling, Lp = Lp, B₀=B₀, kwargs...)
+end
+
+
+""" M-BFGS wrapper of the gereral BFGS implementation.  M == Matrix
+"""
+function M_bfgs(nlp     :: AbstractNLPModel;
+                x       :: Vector{T}=copy(nlp.meta.x0),
+                ϵ       :: T = 1e-6,
+                mem     :: Int = 5,
+                maxiter :: Int = 200,
+                scaling :: Bool = true,
+                Lp      :: Real = 2, # norm Lp 
+                kwargs...
+                ) where T
+
+    @debug "U_Solver = M_bfgs"
+    n = nlp.meta.nvar
+    B₀ =  InverseBFGSOperator(Float64, n, mem=mem, scaling=scaling)
     
     return bfgs(nlp; x=x, ϵ = ϵ, maxiter = maxiter, scaling=scaling, Lp = Lp, B₀=B₀, kwargs...)
 end
