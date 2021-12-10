@@ -75,7 +75,7 @@ function InverseBFGSOperator(M :: Matrix{T}; kwargs...) where {T <: Real}
                            αm,
                            βm::T2,
                            ) where T2
-        
+        n = length(x)
         res .= data.M * x
         #@show data.M
         #@show x
