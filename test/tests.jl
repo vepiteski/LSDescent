@@ -168,7 +168,6 @@ stats, iter, f, g = test_noStp(L_bfgs, nlp, scaling = true, maxiter = maxiter, L
 
 println("\n M-bfgs   ")
 
-mem = 70
 reset!(nlp)
 reinit!(stp)
 
@@ -195,6 +194,24 @@ stats, iter, f, g = test_noStp(M_bfgs, nlp, scaling = true, maxiter = maxiter, L
 @info log_row(Any["M-bfgs", stats.time,  iter, f, g])
 @test g < 1e-6
 
+println("\n scaling = false")
+
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(M_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, scaling = false)
+
+@info log_row(Any["M-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
+mem = 70
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(L_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, mem = mem, scaling = false)
+
+@info log_row(Any["L-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
 
 
 
