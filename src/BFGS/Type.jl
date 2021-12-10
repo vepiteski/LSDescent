@@ -81,7 +81,8 @@ function InverseBFGSOperator(M :: Matrix{T}; kwargs...) where {T <: Real}
         #@show res
         return res
     end
-    n = length(x)
+    
+    n, = size(M)
 
     prod! = @closure (res, x, α, β) -> bfgs_multiply(res, bfgs_data, x, α, β)
     return BFGSOperator{T}(n, n, true, true, prod!, prod!, prod!, bfgs_data)
