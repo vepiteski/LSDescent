@@ -105,7 +105,7 @@ reset!(nlp)
 reinit!(stp)
 Lp = Inf
 my_unconstrained_check(nlp, st; kwargs...) = unconstrained_check(nlp, st, pnorm = Lp; kwargs...)
-stp.meta.optimtrueality_check = my_unconstrained_check
+stp.meta.optimality_check = my_unconstrained_check
 
 stats, stp = test_Stp(bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B)
 
