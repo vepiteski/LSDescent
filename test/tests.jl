@@ -172,7 +172,7 @@ mem = 70
 reset!(nlp)
 reinit!(stp)
 
-stats, stp = test_Stp(M_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, mem = mem)
+stats, stp = test_Stp(M_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B)
 
 @info log_row(Any["M-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
 @test stp.current_state.current_score < 1e-6
@@ -180,7 +180,7 @@ stats, stp = test_Stp(M_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, mem = mem)
 reset!(nlp)
 reinit!(stp)
 
-stats, stp = test_Stp(M_bfgs_Stop, nlp, stp=stp, mem = mem)
+stats, stp = test_Stp(M_bfgs_Stop, nlp, stp=stp)
 
 @info log_row(Any["M-bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
 @test stp.current_state.current_score < 1e-6
@@ -188,7 +188,7 @@ stats, stp = test_Stp(M_bfgs_Stop, nlp, stp=stp, mem = mem)
 
 reset!(nlp)
 
-stats, iter, f, g = test_noStp(M_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf, mem = mem)
+stats, iter, f, g = test_noStp(M_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf)
 
 
 
