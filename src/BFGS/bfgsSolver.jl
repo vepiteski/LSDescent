@@ -126,7 +126,7 @@ function M_bfgs(nlp     :: AbstractNLPModel;
 
     @debug "U_Solver = M_bfgs"
     n = nlp.meta.nvar
-    B₀ =  InverseBFGSOperator(Float64, n, mem=mem, scaling=scaling)
+    B₀ =  InverseBFGSOperator(Float64, n, scaling=scaling)
     
     return bfgs(nlp; x=x, ϵ = ϵ, maxiter = maxiter, scaling=scaling, Lp = Lp, B₀=B₀, kwargs...)
 end
