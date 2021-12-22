@@ -16,7 +16,7 @@ function BFGSData(
 end
 
 
-"A type for limited-memory BFGS approximations."
+"A type for BFGS matrix updates."
 mutable struct BFGSOperator{T, N <: Integer, F, Ft, Fct} <: AbstractLinearOperator{T}
     nrow::N
     ncol::N
