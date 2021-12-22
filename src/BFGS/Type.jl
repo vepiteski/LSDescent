@@ -1,17 +1,18 @@
 using FastClosures
 
-export BFGSdata, BFGSOperator, InverseBFGSOperator
-
 mutable struct BFGSData{T}
     M :: Matrix{T}
     scaling::Bool
+    Ax :: Vector{T}  # pre allocated for mul5
 end
 
 function BFGSData(
     M₀ :: Matrix{T};
     scaling :: Bool = true ) where {T}
 
-    BFGSData{T}(M₀, scaling)
+    n,  = size(M₀) # add checks for square symmetric matrix
+    
+    BFGSData{T}(M₀, scaling, Vector{T}(undef, n))
 end
 
 
@@ -75,15 +76,20 @@ function InverseBFGSOperator(M :: Matrix{T}; kwargs...) where {T <: Real}
                            αm,
                            βm::T2,
                            ) where T2
-        res .= data.M * x
-        #@show data.M
-        #@show x
-        #@show res
+
+        q = data.Ax  # pre allocated
+        q .= data.M * x
+
+        # mul5 stuff
+        if βm == zero(T2)
+            res .= αm .* q
+        else
+            res .= αm .* q .+ βm .* res
+        end
+
         return res
     end
     
-    n, = size(M)
-
     prod! = @closure (res, x, α, β) -> bfgs_multiply(res, bfgs_data, x, α, β)
     return BFGSOperator{T}(n, n, true, true, prod!, prod!, prod!, bfgs_data)
 end

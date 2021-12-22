@@ -32,7 +32,7 @@ function bfgs(nlp     :: AbstractNLPModel;
     @info log_row(Any[iter, f, norm(∇f)])  
 
     while (norm(∇f, Lp) > ϵ) && (iter <= maxiter)
-        d = - (B*∇f) 
+        d = - B*∇f
 
         #------------------------------------------
         # Hard coded line search

@@ -30,7 +30,7 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
     @info log_row(Any[0, f, norm(∇f)])
     
     while !OK
-        d = - (B*∇f)
+        d = - B*∇f
 
         #------------------------------------------
         # Hard coded line search
