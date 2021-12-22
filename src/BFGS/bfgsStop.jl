@@ -118,7 +118,6 @@ function M_bfgs_Stop(nlp     :: AbstractNLPModel;
                      x       :: Vector{T}=copy(nlp.meta.x0),
                      stp :: NLPStopping = NLPStopping(nlp,
                                                       NLPAtX(nlp.meta.x0)),
-                     mem     :: Int = 5,
                      scaling :: Bool = true,
                      kwargs...
                      ) where T

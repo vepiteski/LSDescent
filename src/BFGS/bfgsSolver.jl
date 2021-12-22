@@ -117,7 +117,6 @@ end
 function M_bfgs(nlp     :: AbstractNLPModel;
                 x       :: Vector{T}=copy(nlp.meta.x0),
                 ϵ       :: T = 1e-6,
-                mem     :: Int = 5,
                 maxiter :: Int = 200,
                 scaling :: Bool = true,
                 Lp      :: Real = 2, # norm Lp 

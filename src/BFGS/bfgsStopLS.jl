@@ -106,7 +106,6 @@ function M_bfgs_StopLS(nlp :: AbstractNLPModel;
                        x :: Vector{T}=copy(nlp.meta.x0),
                        stp :: NLPStopping = NLPStopping(nlp,
                                                         NLPAtX(nlp.meta.x0)),
-                       mem :: Int = 5,
                        scaling :: Bool = true,
                        LS_algo   :: Function = bracket_B,
                        LS_logger :: AbstractLogger = Logging.NullLogger(),
