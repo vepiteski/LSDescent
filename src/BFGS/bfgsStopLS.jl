@@ -1,10 +1,12 @@
+include("AcceptAll.jl")
+
 """ BFGS algorithm using a line search supporting stopping
     The initial B₀ may be a matrix, an identity or a operator.
     Using the operator implements L-BFGS
     kwargs may specify options for the line search.
 """  
-function bfgs_StopLS(nlp       :: AbstractNLPModel;
-                     x         :: Vector{T}=copy(nlp.meta.x0),
+function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
+                     x         :: S = copy(nlp.meta.x0),
                      stp       :: NLPStopping = NLPStopping(nlp,
                                                       NLPAtX(nlp.meta.x0)),
                      scaling   :: Bool = true,
@@ -15,22 +17,35 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
                                         UniformScaling{T},
                                         Nothing}              = nothing,
                      kwargs...      # eventually options for the line search
-                     ) where T
+                     ) where {T, S}
     
     
     @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
-    
+
+    n = length(x)
     f = obj(nlp,x)
     ∇f = grad(nlp, x)
 
     xt = similar(x)
     ∇ft = similar(∇f)
 
-    B = one(eltype(x))*I
-    if B₀ != nothing
-        B = B₀
-    end
+    B = AcceptAll(T, B₀)
+
+    #B = InverseBFGSOperator(T, n)
+    #B = one(eltype(x))*I
+
+    #if B₀ != nothing
+    #    if isa(B₀, AbstractMatrix)
+    #        B = InverseBFGSOperator(B)
+    #    elseif isa(B₀, LinearOperator)
+    #        B = B₀
+    #    end
+    #end
+
+    # TO DO: systematically convert to an operator (encapsulate matrices)
+    
+    stp.stopping_user_struct["BFGS"] = B
 
     τ₀ = 0.0005
     τ₁ = 0.9999
@@ -75,14 +90,15 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel;
         @debug x
     end
     
-    return tuple(stp, B)
+    #return tuple(stp, B)
+    return stp
 end
 
 
 """ L-BFGS wrapper of the gereral BFGS implementation.
 """
-function L_bfgs_StopLS(nlp :: AbstractNLPModel;
-                       x :: Vector{T}=copy(nlp.meta.x0),
+function L_bfgs_StopLS(nlp :: AbstractNLPModel{T, S};
+                       x :: S = copy(nlp.meta.x0),
                        stp :: NLPStopping = NLPStopping(nlp,
                                                         NLPAtX(nlp.meta.x0)),
                        mem :: Int = 5,
@@ -90,7 +106,7 @@ function L_bfgs_StopLS(nlp :: AbstractNLPModel;
                        LS_algo   :: Function = bracket_B,
                        LS_logger :: AbstractLogger = Logging.NullLogger(),
                        kwargs...      # eventually options for the line search
-                       ) where T
+                       ) where {T, S}
 
     @debug "U_Solver = L_bfgs_StopLS"
     n = nlp.meta.nvar
@@ -99,13 +115,13 @@ function L_bfgs_StopLS(nlp :: AbstractNLPModel;
     return bfgs_StopLS(nlp; x=x, stp=stp, scaling=scaling, LS_logger=LS_logger, LS_algo=LS_algo, B₀=B₀, kwargs...)
 end
 
-
 """ M-BFGS wrapper of the gereral BFGS implementation. M == Matrix
 """
 function M_bfgs_StopLS(nlp :: AbstractNLPModel;
                        x :: Vector{T}=copy(nlp.meta.x0),
                        stp :: NLPStopping = NLPStopping(nlp,
                                                         NLPAtX(nlp.meta.x0)),
+                       mem :: Int = 5,
                        scaling :: Bool = true,
                        LS_algo   :: Function = bracket_B,
                        LS_logger :: AbstractLogger = Logging.NullLogger(),
