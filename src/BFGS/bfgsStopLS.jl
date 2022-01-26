@@ -1,4 +1,4 @@
-include("AcceptAll.jl")
+#include("AcceptAll.jl")
 
 """ BFGS algorithm using a line search supporting stopping
     The initial B₀ may be a matrix, an identity or a operator.
