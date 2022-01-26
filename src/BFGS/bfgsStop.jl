@@ -1,5 +1,5 @@
 function bfgs_Stop(nlp :: AbstractNLPModel;
-                   x :: Vector{T}=copy(nlp.meta.x0),
+                   x₀  :: Vector{T} = nlp.meta.x0,
                    stp :: NLPStopping = NLPStopping(nlp,
                                                     NLPAtX(nlp.meta.x0)),
                    scaling :: Bool = true,
@@ -12,6 +12,8 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
     
     @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
+
+    x = copy(x₀)
     f = obj(nlp,x)
     ∇f = grad(nlp, x)
 

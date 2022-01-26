@@ -6,7 +6,7 @@
     kwargs may specify options for the line search.
 """  
 function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
-                     x         :: S = copy(nlp.meta.x0),
+                     x₀        :: S = nlp.meta.x0,
                      stp       :: NLPStopping = NLPStopping(nlp,
                                                       NLPAtX(nlp.meta.x0)),
                      scaling   :: Bool = true,
@@ -23,6 +23,7 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
     @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
 
+    x = copy(x₀)
     n = length(x)
     f = obj(nlp,x)
     ∇f = grad(nlp, x)
