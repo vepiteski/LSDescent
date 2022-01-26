@@ -23,6 +23,8 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
         B = B₀
     end
 
+    stp.stopping_user_struct["BFGS"] = B
+
     τ₀ = 0.0005
     τ₁ = 0.9999
 
@@ -86,7 +88,7 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
         @warn status(stp,list=true)
     end
 
-    return stp, B
+    return stp
     #return f, norm(∇f), stp, B
 end
 
