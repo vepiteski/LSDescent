@@ -9,11 +9,6 @@ runtests.jl applique ces variantes à des problèmes de la collection Optimizati
 FormuleN2 est la formule O(n^2) et FormuleN celle mathématique O(n^3) et les versions Op sont implémentées sur les operateurs.
 
 
-Un mot d'attention, ATTENTION, si B est un opérateur tel que défini dans Type.jl, l'expression
-       - B*g   N'APPLIQUE PAS le - UNAIRE
 
-IL FAUT ÉCRIRE    -(B*g)
-
-
-JPD 7 décembre 2021
+JPD 7 janvier 2022
 
