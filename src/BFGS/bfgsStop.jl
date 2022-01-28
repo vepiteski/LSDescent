@@ -99,7 +99,7 @@ end
 """ L-BFGS wrapper of the gereral BFGS implementation.
 """
 function L_bfgs_Stop(nlp     :: AbstractNLPModel;
-                     x       :: Vector{T}=copy(nlp.meta.x0),
+                     x₀      :: Vector{T}=nlp.meta.x0,
                      stp :: NLPStopping = NLPStopping(nlp,
                                                       NLPAtX(nlp.meta.x0)),
                      mem     :: Int = 5,
@@ -111,7 +111,7 @@ function L_bfgs_Stop(nlp     :: AbstractNLPModel;
     n = nlp.meta.nvar
     B₀ =  InverseLBFGSOperator(Float64, n, mem=mem, scaling=scaling)
     
-    return bfgs_Stop(nlp; x=x, stp = stp, scaling=scaling, B₀=B₀, kwargs...)
+    return bfgs_Stop(nlp; x₀=x₀, stp = stp, scaling=scaling, B₀=B₀, kwargs...)
 end
 
 
