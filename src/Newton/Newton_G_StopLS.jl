@@ -1,20 +1,21 @@
 """ Spectral Newton algorithm using a line search supporting stopping
 """
 function Newton_G_StopLS(nlp :: AbstractNLPModel;
-                       x :: Vector{T}=copy(nlp.meta.x0),
-                       stp :: NLPStopping = NLPStopping(nlp,
-                                                        NLPAtX(nlp.meta.x0)),
-                       LS_algo   :: Function = bracket,
-                       LS_logger :: AbstractLogger = Logging.NullLogger(),                    
-                       NwtDirection :: Function = NwtdirectionSpectral,
-                       hessian_rep :: Function = hessian_dense,
-                       kwargs...      # eventually options for the line search
-                       ) where T
+                         x :: Vector{T}=copy(nlp.meta.x0),
+                         stp :: NLPStopping = NLPStopping(nlp,
+                                                          NLPAtX(nlp.meta.x0)),
+                         LS_algo   :: Function = bracket,
+                         LS_logger :: AbstractLogger = Logging.NullLogger(),                    
+                         NwtDirection :: Function = NwtdirectionSpectral,
+                         hessian_rep :: Function = hessian_dense,
+                         γ ::T = 1e-6,
+                         kwargs...      # eventually options for the line search
+                         ) where T
    
     
     n = nlp.meta.nvar
 
-    @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
+     @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
     f ::T  = obj(nlp,x)
     ∇f :: Vector{T} = grad(nlp, x)
@@ -43,7 +44,7 @@ function Newton_G_StopLS(nlp :: AbstractNLPModel;
         #D = abs.(Δ) + max.((γ .- abs.(Δ)), 0.0) .*ones(n)
         #d = - O*diagm(1.0 ./ D)*O'*∇f
 
-        d = NwtDirection(H, ∇f; kwargs...)
+        d = NwtDirection(H, ∇f; γ = γ, kwargs...)
 
         hp0 = ∇f⋅d
         #hp0 = ∇f'*d

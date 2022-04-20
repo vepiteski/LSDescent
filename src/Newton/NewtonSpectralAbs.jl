@@ -1,10 +1,11 @@
 export NwtdirectionSpectral, NewtonSpectralAbs
 
-function NwtdirectionSpectral(H, ∇f; scale_abs :: Bool = true)
+function NwtdirectionSpectral(H, ∇f; scale_abs :: Bool = true
+                              γ = 1e-6)
     Δ, O = eigen(H)
     # Boost negative values of Δ to 1e-8
     # devise an adaptative value for γ
-    γ = 1e-6
+    #γ = 1e-6
     n = length(Δ)
     if scale_abs   
         #D = abs.(Δ) + max.((γ .- abs.(Δ)), 0.0) .*ones(n)
