@@ -3,29 +3,15 @@ export NwtdirectionSpectral, NewtonSpectralAbs
 function NwtdirectionSpectral(H, ∇f; scale_abs :: Bool = true,
                               γ = 1e-6)
     Δ, O = eigen(H)
-    # Boost negative values of Δ to 1e-8
-    # devise an adaptative value for γ
-    #γ = 1e-6
+    # devise an adaptative value for γ ? akin to Levenberg-Marquardt?
     n = length(Δ)
     if scale_abs   
-        #D = abs.(Δ) + max.((γ .- abs.(Δ)), 0.0) .*ones(n)
         D = max.(abs.(Δ), γ)
     else
         D = max.(Δ, γ)
     end
     d = - O*diagm(1.0 ./ D)*O'*∇f
-    #Δ = ones(g)
-    #V = ones(H)
-    #try
-    #    Δ, V = eig(H)
-    #catch
-    #    Δ, V = eig(H + eye(H))
-    #end
-    #ϵ2 =  1.0e-8 
-    #Γ = 1.0 ./ max.(abs.(Δ),ϵ2)
-    
-    #d = - (V * diagm(Γ) * V') * (g)
-    return d
+   return d
 end
 
 function NewtonSpectralAbs(nlp :: AbstractNLPModel;

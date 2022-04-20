@@ -2,7 +2,8 @@ export NwtdirectionLDLt, NewtonLDLtAbsLS
 
 include("ldlt_symm.jl")
 
-function NwtdirectionLDLt(H,g; scale_abs :: Bool = true)
+function NwtdirectionLDLt(H,g; scale_abs :: Bool = true,
+                          γ = 1e-8)
     L = Matrix{Float64}
     D = Matrix{Float64}
     pp = Array{Int}
@@ -24,7 +25,8 @@ function NwtdirectionLDLt(H,g; scale_abs :: Bool = true)
     if true in isnan.(D) 
  	println("*******   Problem in D from LDLt: NaN")
         println(" cond (H) = $(cond(H))")
-        #res = PDataLDLt()
+        #res = PDataLDLt()        d = NwtDirection(H, ∇f; γ = γ, kwargs...)
+
         #res.OK = false
         #return res
         return (NaN, NaN, NaN, Inf, false, true, :fail)
@@ -32,7 +34,7 @@ function NwtdirectionLDLt(H,g; scale_abs :: Bool = true)
 
     Δ, Q = eig(D)
 
-    ϵ2 =  1.0e-8
+    ϵ2 = γ
     if scale_abs
         Γ = max.(abs.(Δ),ϵ2)
     else
