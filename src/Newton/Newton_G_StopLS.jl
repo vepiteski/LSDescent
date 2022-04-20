@@ -8,7 +8,7 @@ function Newton_G_StopLS(nlp :: AbstractNLPModel;
                          LS_logger :: AbstractLogger = Logging.NullLogger(),                    
                          NwtDirection :: Function = NwtdirectionSpectral,
                          hessian_rep :: Function = hessian_dense,
-                         γ ::T = 1e-6,
+                         #γ ::T = 1e-6,
                          kwargs...      # eventually options for the line search
                          ) where T
    
@@ -44,7 +44,8 @@ function Newton_G_StopLS(nlp :: AbstractNLPModel;
         #D = abs.(Δ) + max.((γ .- abs.(Δ)), 0.0) .*ones(n)
         #d = - O*diagm(1.0 ./ D)*O'*∇f
 
-        d = NwtDirection(H, ∇f; γ = γ, kwargs...)
+        #d = NwtDirection(H, ∇f; γ = γ, kwargs...)
+        d = NwtDirection(H, ∇f; kwargs...)
 
         hp0 = ∇f⋅d
         #hp0 = ∇f'*d
