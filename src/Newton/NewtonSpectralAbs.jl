@@ -1,6 +1,6 @@
 export NwtdirectionSpectral, NewtonSpectralAbs
 
-function NwtdirectionSpectral(H, ∇f; scale_abs :: Bool = true
+function NwtdirectionSpectral(H, ∇f; scale_abs :: Bool = true,
                               γ = 1e-6)
     Δ, O = eigen(H)
     # Boost negative values of Δ to 1e-8
