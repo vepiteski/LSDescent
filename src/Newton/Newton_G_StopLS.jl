@@ -44,7 +44,8 @@ function Newton_G_StopLS(nlp :: AbstractNLPModel;
         #d = - O*diagm(1.0 ./ D)*O'*∇f
 
         d = NwtDirection(H, ∇f; kwargs...)
-        
+
+        hp0 = ∇f⋅d
         #hp0 = ∇f'*d
         # Simple line search call        
 
