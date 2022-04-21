@@ -3,7 +3,7 @@ Higams' ldlt_symm translated from matlab. Performs  a so called
  BKK  Bounded Bunch Kaufman factorization of A0, that means 
  ||L|| is bounded and bounded away from zero.
 """
-function  ldlt_symm(A0 :: Array{Float64,2}, piv :: Char='r')
+function  ldlt_symm(A0 :: Array{T,2}, piv :: Char='r') where T
 
     #LDLT_SYMM  Block LDL^T factorization for a symmetric indefinite matrix.
     #     Given a Hermitian matrix A,
