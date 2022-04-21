@@ -1,4 +1,4 @@
-export NwtdirectionCG, NewtonCG
+export NwtdirectionCG, NewtonCG, NewtonCGLS
 using Krylov
 
 function NwtdirectionCG(H, ∇f; kwargs...)

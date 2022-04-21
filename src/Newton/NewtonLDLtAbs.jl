@@ -1,4 +1,4 @@
-export NwtdirectionLDLt, NewtonLDLtAbsLS
+export NwtdirectionLDLt, NewtonLDLtAbs, NewtonLDLtAbsLS
 
 include("ldlt_symm.jl")
 
@@ -65,6 +65,20 @@ function NewtonLDLtAbsLS(nlp :: AbstractNLPModel;
                             NwtDirection = NwtdirectionSpectral,
                             hessian_rep = hessian_dense,
                             kwargs...)
+end
+
+    
+function NewtonLDLtAbs(nlp :: AbstractNLPModel;
+                       x :: Vector{T}=copy(nlp.meta.x0),
+                       stp :: NLPStopping = NLPStopping(nlp,
+                                                        NLPAtX(nlp.meta.x0)), 
+                       kwargs...) where T
+    return  Newton_G_Stop(nlp;
+                          x = x,
+                          stp = stp,
+                          NwtDirection = NwtdirectionSpectral,
+                          hessian_rep = hessian_dense,
+                          kwargs...)
 end
 
     

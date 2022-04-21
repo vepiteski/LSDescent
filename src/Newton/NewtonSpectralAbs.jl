@@ -1,4 +1,4 @@
-export NwtdirectionSpectral, NewtonSpectralAbs
+export NwtdirectionSpectral, NewtonSpectralAbs, NewtonSpectralAbsLS
 
 function NwtdirectionSpectral(H, ∇f; scale_abs :: Bool = true,
                               γ = 1e-6)
