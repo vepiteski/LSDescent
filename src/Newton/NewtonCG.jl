@@ -5,7 +5,8 @@ function NwtdirectionCG(H, ∇f; τ = 0.5, kwargs...)
     e=1e-8
     n = length(∇f)
     #τ = 0.5 # need parametrization
-    cgtol = max(e, min(0.7, 0.01 * norm(∇f)^(1.0 + τ)))
+    ng = norm(∇f)
+    cgtol = max(e, min(0.7, (0.1 * ng), ng^(1.0 + τ)))
     
     (d, cg_stats) = cg(H, -∇f,
                        atol=cgtol, rtol=0.0,
