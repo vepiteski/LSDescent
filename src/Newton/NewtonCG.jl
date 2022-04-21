@@ -2,7 +2,7 @@ export NwtdirectionCG, NewtonCG, NewtonCGLS
 using Krylov
 
 function NwtdirectionCG(H, ∇f; τ = 0.5, kwargs...)
-    e=1e-6
+    e=1e-1
     n = length(∇f)
     #τ = 0.5 # need parametrization
     cgtol = max(e, min(0.7, 0.01 * norm(∇f)^(1.0 + τ)))
