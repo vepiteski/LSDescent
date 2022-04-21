@@ -32,7 +32,7 @@ function NwtdirectionLDLt(H,g; scale_abs :: Bool = true,
         return (NaN, NaN, NaN, Inf, false, true, :fail)
     end
 
-    Δ, Q = eig(D)
+    Δ, Q = eigen(D)
 
     ϵ2 = γ
     if scale_abs
