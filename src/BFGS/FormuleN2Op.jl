@@ -3,11 +3,10 @@ import Base.push!
 function push!(Bop :: BFGSOperator{T, N, F1, F2, F3},
                sk:: Vector{T},
                yk:: Vector{T}) where {T, N, F1, F2, F3}
-
     scaling = Bop.data.scaling
     denom = yk'*sk 
     B = Bop.data.M
-    if (denom > 1.0e-20) 
+    if (denom > eps(T)) 
         #self-scaled version aka Luenberger
 
         #divide vector yk by denom 
@@ -42,7 +41,7 @@ function push!(Bop :: BFGSOperator{T, N, F1, F2, F3},
         #B = Matrix(eltype(yk).(I(length(yk))))
     end
 
-    Bop.data.M .= B
+    Bop.data.M = B
     
     return Bop
 end
