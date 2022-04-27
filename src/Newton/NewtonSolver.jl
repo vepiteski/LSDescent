@@ -1,3 +1,5 @@
+export Newton_Spectral
+
 function Newton_Spectral(nlp     :: AbstractNLPModel;
                          x       :: AbstractVector=copy(nlp.meta.x0),
                          ϵ       :: Real=√eps(eltype(x)),

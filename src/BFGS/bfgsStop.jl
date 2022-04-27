@@ -1,3 +1,5 @@
+export bfgs_Stop, L_bfgs_Stop, M_bfgs_Stop, Ch_bfgs_Stop
+
 function bfgs_Stop(nlp :: AbstractNLPModel;
                    x :: Vector{T}=copy(nlp.meta.x0),
                    stp :: NLPStopping = NLPStopping(nlp,

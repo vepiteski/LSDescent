@@ -1,3 +1,4 @@
+export  Newton_G_Stop
 
 function Newton_G_Stop(nlp :: AbstractNLPModel;
                        x   :: Vector{T}=copy(nlp.meta.x0),

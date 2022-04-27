@@ -1,3 +1,5 @@
+export Newton_StopLS
+
 """ Spectral Newton algorithm using a line search supporting stopping
 """
 function Newton_StopLS(nlp :: AbstractNLPModel;

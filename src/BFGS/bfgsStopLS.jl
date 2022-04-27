@@ -1,3 +1,5 @@
+export bfgs_StopLS, L_bfgs_StopLS, M_bfgs_StopLS, Ch_bfgs_StopLS
+
 include("AcceptAll.jl")
 
 """ BFGS algorithm using a line search supporting stopping
