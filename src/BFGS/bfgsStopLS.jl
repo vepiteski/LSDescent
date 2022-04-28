@@ -32,7 +32,7 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
     xt = similar(x)
     ∇ft = similar(∇f)
 
-    B = AcceptAll(T, B₀)
+    B = AcceptAll(T, n, B₀)
 
     #B = InverseBFGSOperator(T, n)
     #B = one(eltype(x))*I
