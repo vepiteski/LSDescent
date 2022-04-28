@@ -151,10 +151,8 @@ function Ch_bfgs_StopLS(nlp :: AbstractNLPModel;
                        kwargs...      # eventually options for the line search
                        ) where T
 
-    @debug "U_Solver = M_bfgs_StopLS"
+    @debug "U_Solver = Ch_bfgs_StopLS"
     n = nlp.meta.nvar
-    include("FormuleChOp.jl")
-    include("TypeChol.jl")
 
     B₀ = ChBFGSOperator(Float64, n; scaling = scaling);
     
