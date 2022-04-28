@@ -11,7 +11,7 @@ quasiNewtonOp = Union{LBFGSOperator, BFGSOperator}
 
     defaults to InverseBFGSOperator   initialized to I
 """
-function AcceptAll(T,
+function AcceptAll(T, n,
                    B₀    :: Union{AbstractLinearOperator,
                                   AbstractMatrix,
                                   UniformScaling,

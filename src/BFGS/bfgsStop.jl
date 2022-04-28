@@ -16,11 +16,12 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
     f = obj(nlp,x)
     ∇f = grad(nlp, x)
+    n = length(x)
 
     xt = similar(x)
     ∇ft = similar(∇f)
 
-    B = AcceptAll(T, B₀)    
+    B = AcceptAll(T, n, B₀)    
     stp.stopping_user_struct["BFGS"] = B
 
     τ₀ = 0.0005
