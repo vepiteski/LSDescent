@@ -71,10 +71,9 @@ isallocated5(op::BFGSOperator) = true
     InverseBFGSOperator(n, [; scaling=true])
 Construct a BFGS approximation in inverse form. 
 """
-function InverseBFGSOperator(M :: Matrix{T}; kwargs...) where {T <: Real}
+function InverseBFGSOperator(M :: Matrix{T}, n :: Int; kwargs...) where {T <: Real}
     kwargs = Dict(kwargs)
     bfgs_data = BFGSData(M; kwargs...)
-    n = bfgs_data.n
 
     function bfgs_multiply(res::AbstractVector,
                            data::BFGSData,
