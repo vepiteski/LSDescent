@@ -19,7 +19,24 @@ function ChBFGSData(
 end
 
 
-BFGSOperator{T}(
+"A type for Cholesky BFGS approximations."
+mutable struct ChBFGSOperator{T, N <: Integer, F, Ft, Fct} <: AbstractLinearOperator{T}
+    nrow::N
+    ncol::N
+    symmetric::Bool
+    hermitian::Bool
+    prod!::F    # apply the operator to a vector
+    tprod!::Ft    # apply the transpose operator to a vector
+    ctprod!::Fct   # apply the transpose conjugate operator to a vector
+    #inverse::Bool
+    data::QNData{T}
+    nprod::N
+    ntprod::N
+    nctprod::N
+end
+
+
+ChBFGSOperator{T}(
     nrow :: N,
     ncol :: N,
     symmetric :: Bool,
@@ -28,7 +45,7 @@ BFGSOperator{T}(
     tprod!::Ft,
     ctprod!::Fct,
     data::ChBFGSData{T},
-) where {T, N, F, Ft, Fct} = BFGSOperator{T, N, F, Ft, Fct}(
+) where {T, N, F, Ft, Fct} = ChBFGSOperator{T, N, F, Ft, Fct}(
     nrow,
     ncol,
     symmetric,
@@ -80,7 +97,7 @@ function ChBFGSOperator(M :: Matrix{T}, n :: Int; kwargs...) where {T <: Real}
     end
     
     prod! = @closure (res, x, α, β) -> Chbfgs_multiply(res, Ch_bfgs_data, x, α, β)
-    return BFGSOperator{T}(n, n, true, true, prod!, prod!, prod!, Ch_bfgs_data)
+    return ChBFGSOperator{T}(n, n, true, true, prod!, prod!, prod!, Ch_bfgs_data)
 end
 
 function ChBFGSOperator(T, n :: N; kwargs...) where {N <: Integer}
@@ -88,8 +105,3 @@ function ChBFGSOperator(T, n :: N; kwargs...) where {N <: Integer}
     ChBFGSOperator(Eye, n; kwargs...)
 end
 
-
-
-#function Matrix(Op::InverseBFGSOperator)
-#    return Op.data.M
-#end

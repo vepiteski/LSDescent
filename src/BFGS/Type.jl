@@ -103,9 +103,3 @@ function InverseBFGSOperator(T, n :: N; kwargs...) where {N <: Integer}
     Eye = Matrix{T}(I,n,n)
     InverseBFGSOperator(Eye, n; kwargs...)
 end
-
-
-
-#function Matrix(Op::InverseBFGSOperator)
-#    return Op.data.M
-#end

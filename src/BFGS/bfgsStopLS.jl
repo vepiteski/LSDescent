@@ -157,7 +157,6 @@ function Ch_bfgs_StopLS(nlp :: AbstractNLPModel;
     include("TypeChol.jl")
 
     B₀ = ChBFGSOperator(Float64, n; scaling = scaling);
-    #B₀ =  InverseBFGSOperator(Float64, n, scaling=scaling)
     
     return bfgs_StopLS(nlp; x=x, stp=stp, scaling=scaling, LS_logger=LS_logger, LS_algo=LS_algo, B₀=B₀, kwargs...)
 end
