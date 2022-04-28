@@ -74,6 +74,7 @@ Construct a BFGS approximation in inverse form.
 function InverseBFGSOperator(M :: Matrix{T}; kwargs...) where {T <: Real}
     kwargs = Dict(kwargs)
     bfgs_data = BFGSData(M; kwargs...)
+    n = bfgs_data.n
 
     function bfgs_multiply(res::AbstractVector,
                            data::BFGSData,

@@ -55,6 +55,7 @@ Construct a BFGS approximation in inverse form.
 function ChBFGSOperator(M :: Matrix{T}; kwargs...) where {T <: Real}
     kwargs = Dict(kwargs)
     Ch_bfgs_data = ChBFGSData(M; kwargs...)
+    n = Ch_bfgs_data.n
 
     function Chbfgs_multiply(res::AbstractVector,
                            data::ChBFGSData,
@@ -64,7 +65,6 @@ function ChBFGSOperator(M :: Matrix{T}; kwargs...) where {T <: Real}
                            ) where T2
 
         q = data.Ax  # pre allocated
-        n = data.n
         # name confusion, the Cholesky factors are used to represent
         # the INVERSE operator, thus multiplication is indeed C \ x
         q .= data.C \ x
