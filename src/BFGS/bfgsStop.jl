@@ -149,7 +149,7 @@ function Ch_bfgs_Stop(nlp     :: AbstractNLPModel;
 
     @debug "U_Solver = M_bfgs"
     n = nlp.meta.nvar
-
+@show scaling
     B₀ = ChBFGSOperator(Float64, n; scaling = scaling);
     
     return bfgs_Stop(nlp; x=x, stp = stp, scaling=scaling, B₀=B₀, kwargs...)
