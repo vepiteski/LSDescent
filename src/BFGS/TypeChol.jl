@@ -1,3 +1,5 @@
+using FastClosures
+
 mutable struct ChBFGSData{T} <: QNData{T}
     C :: Cholesky{T}
     scaling::Bool
@@ -43,7 +45,6 @@ has_args5(op::BFGSOperator) = true
 use_prod5!(op::BFGSOperator) = true
 isallocated5(op::BFGSOperator) = true
 
-using FastClosures
 
 
 """
