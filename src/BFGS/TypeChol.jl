@@ -1,3 +1,5 @@
+export ChBFGSOperator
+
 using FastClosures
 
 mutable struct ChBFGSData{T} <: QNData{T}
