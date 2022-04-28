@@ -8,47 +8,6 @@ function  push!(Bop :: ChBFGSOperator{T, N, F1, F2, F3},
     denom = yk'*sk
     
     #C = Bop.data.C    prod!,
-    tprod!,
-    ctprod!,
-    data,
-    0,
-    0,
-    0,
-)
-
-import LinearOperators:has_args5, use_prod5!, isallocated5
-has_args5(op::BFGSOperator) = true
-use_prod5!(op::BFGSOperator) = true
-isallocated5(op::BFGSOperator) = true
-
-
-
-"""
-    InverseBFGSOperator(M₀, n [; scaling=true])
-    InverseBFGSOperator(n, [; scaling=true])
-Construct a BFGS approximation in inverse form. 
-"""
-function ChBFGSOperator(M :: Matrix{T}, n :: Int; kwargs...) where {T <: Real}
-    kwargs = Dict(kwargs)
-    Ch_bfgs_data = ChBFGSData(M; kwargs...)
-
-    function Chbfgs_multiply(res::AbstractVector,
-                           data::ChBFGSData,
-                           x::AbstractArray,
-                           αm,
-                           βm::T2,
-                           ) where T2
-
-        q = data.Ax  # pre allocated
-        # name confusion, the Cholesky factors are used to represent
-        # the INVERSE operator, thus multiplication is indeed C \ x
-        q .= data.C \ x
-        # mul5 stuff
-        if βm == zero(T2)
-            res .= αm .* q
-        else
-            res .= αm .* q .+ βm .* res
-        end
     # try to work inplace
     (;C) = Bop.data
 
