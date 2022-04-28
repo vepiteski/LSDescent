@@ -1,3 +1,5 @@
+export BFGSOperator, InverseBFGSOperator
+
 using FastClosures
 
 abstract type QNData{T} end
