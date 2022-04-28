@@ -21,7 +21,7 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
                      kwargs...      # eventually options for the line search
                      ) where {T, S}
     
-    
+    @show scaling
     @info log_header([:iter, :f, :dual, :step, :nBtrk], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖"))
 
@@ -152,6 +152,7 @@ function Ch_bfgs_StopLS(nlp :: AbstractNLPModel;
                        ) where T
 
     @debug "U_Solver = Ch_bfgs_StopLS"
+    
     n = nlp.meta.nvar
 
     B₀ = ChBFGSOperator(Float64, n; scaling = scaling);

@@ -11,7 +11,7 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
                           Nothing}              = nothing
                    ) where T
     
-    
+    @show scaling
     @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
     f = obj(nlp,x)
