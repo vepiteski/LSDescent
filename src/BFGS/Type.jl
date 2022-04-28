@@ -84,7 +84,6 @@ function InverseBFGSOperator(M :: Matrix{T}, n :: Int; kwargs...) where {T <: Re
 
         q = data.Ax  # pre allocated
         q .= data.M * x
-        n = data.n
 
         # mul5 stuff
         if βm == zero(T2)
