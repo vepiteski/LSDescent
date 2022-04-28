@@ -102,7 +102,7 @@ end
 
 function InverseBFGSOperator(T, n :: N; kwargs...) where {N <: Integer}
     Eye = Matrix{T}(I,n,n)
-    InverseBFGSOperator(Eye; kwargs...)
+    InverseBFGSOperator(Eye, n; kwargs...)
 end
 
 
