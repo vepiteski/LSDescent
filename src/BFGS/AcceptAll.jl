@@ -1,6 +1,6 @@
 
 # For now, only inverse BFGS versions
-quasiNewtonOp = Union{LBFGSOperator, BFGSOperator}
+quasiNewtonOp = Union{LBFGSOperator, BFGSOperator, ChBFGSOperator}
 
 
 """ Accept any form of initial quasi-Newton representation
