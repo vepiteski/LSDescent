@@ -11,7 +11,6 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
                           Nothing}              = nothing
                    ) where T
     
-    @show scaling
     @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
     f = obj(nlp,x)
@@ -23,6 +22,8 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
 
     B = AcceptAll(T, n, B₀)    
     stp.stopping_user_struct["BFGS"] = B
+
+    @show B.data.scaling
 
     τ₀ = 0.0005
     τ₁ = 0.9999
