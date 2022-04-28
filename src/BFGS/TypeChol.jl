@@ -60,9 +60,9 @@ ChBFGSOperator{T}(
 )
 
 import LinearOperators:has_args5, use_prod5!, isallocated5
-has_args5(op::BFGSOperator) = true
-use_prod5!(op::BFGSOperator) = true
-isallocated5(op::BFGSOperator) = true
+has_args5(op::ChBFGSOperator) = true
+use_prod5!(op::ChBFGSOperator) = true
+isallocated5(op::ChBFGSOperator) = true
 
 
 
