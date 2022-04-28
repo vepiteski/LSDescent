@@ -21,7 +21,6 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
                      kwargs...      # eventually options for the line search
                      ) where {T, S}
     
-    @show scaling
     @info log_header([:iter, :f, :dual, :step, :nBtrk], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖"))
 
