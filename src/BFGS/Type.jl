@@ -1,4 +1,4 @@
-export BFGSOperator, InverseBFGSOperator
+export BFGSOperator, InverseBFGSOperator, QNData, BFGSData
 
 using FastClosures
 
