@@ -83,7 +83,7 @@ end
 
 function ChBFGSOperator(T, n :: N; kwargs...) where {N <: Integer}
     Eye = Matrix{T}(I,n,n)
-    ChBFGSOperator(Eye; kwargs...)
+    ChBFGSOperator(Eye, n; kwargs...)
 end
 
 
