@@ -16,9 +16,10 @@ n = nlp.meta.nvar
 include("tests.jl")
 
 # test all solvers with the well known genrose test function
-println("\n\n Tests with the genrose test function, n=40.\n")
+n = 4
+println("\n\n Tests with the genrose test function, n=",n,".\n")
 include("genrose.jl")
-nlp = MathOptNLPModel(genrose(40), name="genrose")
+nlp = MathOptNLPModel(genrose(n), name="genrose")
 n = nlp.meta.nvar
 
 include("tests.jl")
