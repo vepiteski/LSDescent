@@ -1,3 +1,5 @@
+export CG_generic
+
 """ Conjugate gradient algorithm using a line search supporting stopping
     Generic version receiving a conjugacy formula
     kwargs may specify options for the line search.
