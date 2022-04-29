@@ -124,14 +124,14 @@ stats, stp = test_Stp(bfgs_Stop, nlp, stp=stp)
 
 
 
-reset!(nlp)
-
-stats, iter, f, g = test_noStp(bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf)
-
-
-
-@info log_row(Any["bfgs", stats.time,  iter, f, g])
-@test g < 1e-6
+#reset!(nlp)
+#
+#stats, iter, f, g = test_noStp(bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf)
+#
+#
+#
+#@info log_row(Any["bfgs", stats.time,  iter, f, g])
+#@test g < 1e-6
 
 
 
@@ -156,14 +156,14 @@ stats, stp = test_Stp(L_bfgs_Stop, nlp, stp=stp, mem = mem)
 @test stp.current_state.current_score < 1e-6
 
 
-reset!(nlp)
-
-stats, iter, f, g = test_noStp(L_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf, mem = mem)
-
-
-
-@info log_row(Any["L-bfgs", stats.time,  iter, f, g])
-@test g < 1e-6
+#reset!(nlp)
+#
+#stats, iter, f, g = test_noStp(L_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf, mem = mem)
+#
+#
+#
+#@info log_row(Any["L-bfgs", stats.time,  iter, f, g])
+#@test g < 1e-6
 
 
 println("\n M-bfgs   ")
