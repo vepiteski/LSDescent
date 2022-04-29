@@ -24,7 +24,8 @@ function AcceptAll(T, n,
     if B₀ != nothing
         if isa(B₀, AbstractMatrix)
             B = InverseBFGSOperator(B₀)
-        elseif isa(B₀, quasiNewtonOp)
+        #elseif isa(B₀, quasiNewtonOp)
+        elseif isa(B₀,AbstractLinearOperator )
             B = B₀
         else @warn "Unsupported quasiNewton Operator, using InverseBFGSOperator"
         end
