@@ -184,6 +184,24 @@ stats, stp = test_Stp(M_bfgs_Stop, nlp, stp=stp)
 @info log_row(Any["M-bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
 @test stp.current_state.current_score < 1e-6
 
+println("\n Ch-bfgs   ")
+
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(Ch_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B)
+
+@info log_row(Any["Ch-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(Ch_bfgs_Stop, nlp, stp=stp)
+
+@info log_row(Any["Ch-bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
 
 #reset!(nlp)
 #
