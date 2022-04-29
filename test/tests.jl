@@ -185,14 +185,14 @@ stats, stp = test_Stp(M_bfgs_Stop, nlp, stp=stp)
 @test stp.current_state.current_score < 1e-6
 
 
-reset!(nlp)
-
-stats, iter, f, g = test_noStp(M_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf)
-
-
-
-@info log_row(Any["M-bfgs", stats.time,  iter, f, g])
-@test g < 1e-6
+#reset!(nlp)
+#
+#stats, iter, f, g = test_noStp(M_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf)
+#
+#
+#
+#@info log_row(Any["M-bfgs", stats.time,  iter, f, g])
+#@test g < 1e-6
 
 println("\n scaling = false")
 
