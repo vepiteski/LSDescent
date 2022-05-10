@@ -215,11 +215,23 @@ git-tree-sha1 = "0f47f7a2ecb7f8c4df6d258fd2268b56e62ab17c"
 uuid = "ba0b0d4f-ebba-5204-a429-3ac8c609bfb7"
 version = "0.7.9"
 
+[[LBFGSB]]
+deps = ["L_BFGS_B_jll"]
+git-tree-sha1 = "e2e6f53ee20605d0ea2be473480b7480bd5091b5"
+uuid = "5be7bae1-8223-5378-bac3-9e7378a2f6e6"
+version = "0.4.1"
+
 [[LLSModels]]
 deps = ["NLPModels", "NLPModelsModifiers", "SparseArrays"]
 git-tree-sha1 = "316011e6ee63996ee67a59f4b1d017c51b05f90a"
 uuid = "39f5bc3e-5160-4bf8-ac48-504fd2534d24"
 version = "0.3.0"
+
+[[L_BFGS_B_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "77feda930ed3f04b2b0fbb5bea89e69d3677c6b0"
+uuid = "81d17ec3-03a1-5e46-b53e-bddc35a13473"
+version = "3.0.1+0"
 
 [[LazyArtifacts]]
 deps = ["Artifacts", "Pkg"]
@@ -245,7 +257,7 @@ uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 
 [[LinearAlgebra]]
-deps = ["Libdl"]
+deps = ["Libdl", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[LinearOperators]]
@@ -313,6 +325,12 @@ git-tree-sha1 = "e17945150641249d1658637e4faf71a049067d73"
 uuid = "a4795742-8479-5a88-8948-cc11e1c8c1a6"
 version = "0.17.2"
 
+[[NLPModelsJuMP]]
+deps = ["JuMP", "LinearAlgebra", "MathOptInterface", "NLPModels", "Printf", "SparseArrays"]
+git-tree-sha1 = "12cbb1ef1574b0e14136e7c0f32d8b3c5ea56793"
+uuid = "792afdf1-32c1-5681-94e0-d7bf7a5df49e"
+version = "0.8.4"
+
 [[NLPModelsModifiers]]
 deps = ["FastClosures", "LinearAlgebra", "LinearOperators", "NLPModels", "Printf", "SparseArrays"]
 git-tree-sha1 = "705d402d1fe1837f0c07dd1d7b137b390fb764c5"
@@ -335,6 +353,10 @@ repo-url = "https://github.com/vepiteski/OneDmin.jl"
 uuid = "e4273c13-0309-4fa6-90e5-406c07af81ee"
 version = "0.1.0"
 
+[[OpenBLAS_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
+uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
+
 [[OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
@@ -344,6 +366,12 @@ deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pk
 git-tree-sha1 = "13652491f6856acfd2db29360e1bbcd4565d04f1"
 uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
 version = "0.5.5+0"
+
+[[OptimizationProblems]]
+deps = ["DataFrames", "JuMP", "LinearAlgebra", "Requires"]
+git-tree-sha1 = "dd0adb735c0d1c0b5ddc4679a06632266b28a6df"
+uuid = "5049e819-d29b-5fba-b941-0eee7e64c1c6"
+version = "0.4.2"
 
 [[OrderedCollections]]
 git-tree-sha1 = "85f8e6578bf1f9ee0d11e7bb1b1456435479d47c"
@@ -397,7 +425,7 @@ deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 
 [[Random]]
-deps = ["Serialization"]
+deps = ["SHA", "Serialization"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[RecipesBase]]
@@ -409,6 +437,12 @@ version = "1.1.2"
 git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
 uuid = "189a3867-3050-52da-a836-e630ba90ab69"
 version = "1.2.2"
+
+[[Requires]]
+deps = ["UUIDs"]
+git-tree-sha1 = "838a3a4188e2ded87a4f9f184b4b0d78a1e91cb7"
+uuid = "ae029012-a4dd-5104-9daa-d747884805df"
+version = "1.3.0"
 
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -519,6 +553,10 @@ uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 [[Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
+
+[[libblastrampoline_jll]]
+deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
+uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
 
 [[nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
