@@ -1,7 +1,6 @@
 export CompactInverseBFGSOperator
 
 import Base.push!
-import LinearOperators: has_args5, use_prod5!, isallocated5
 
 using FastClosures
 using LinearAlgebra
@@ -80,9 +79,11 @@ CompactInverseBFGSOperator{T}(
     0,
 )
 
+import LinearOperators: has_args5, use_prod5!, isallocated5
 has_args5(op::CompactInverseBFGSOperator) = true
 use_prod5!(op::CompactInverseBFGSOperator) = true
 isallocated5(op::CompactInverseBFGSOperator) = true
+storage_type(op::CompactInverseBFGSOperator{T}) where {T} = Vector{T}
 
 """
         CompactInverseBFGSOperator(T, n, [mem=5])
