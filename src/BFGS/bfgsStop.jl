@@ -1,4 +1,6 @@
-export bfgs_Stop, L_bfgs_Stop, M_bfgs_Stop, Ch_bfgs_Stop
+export bfgs_Stop, L_bfgs_Stop, M_bfgs_Stop, Ch_bfgs_Stop, C_bfgs_Stop
+
+include("AcceptAll.jl")
 
 function bfgs_Stop(nlp :: AbstractNLPModel;
                    x :: Vector{T}=copy(nlp.meta.x0),
@@ -10,7 +12,7 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
                           UniformScaling{T},
                           Nothing}              = nothing
                    ) where T
-    
+
     @info log_header([:iter, :f, :dual, :step, :slope], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖", :slope=>"∇fᵀd"))
     f = obj(nlp,x)
@@ -20,7 +22,7 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
     xt = similar(x)
     ∇ft = similar(∇f)
 
-    B = AcceptAll(T, n, B₀)    
+    B = AcceptAll(T, n, B₀)
     stp.stopping_user_struct["BFGS"] = B
 
     @show B.data.scaling
@@ -30,7 +32,7 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
 
     OK = update_and_start!(stp, x = x, fx = f, gx = ∇f)
     @info log_row(Any[0, f, norm(∇f)])
-    
+
     while !OK
         d = - B*∇f
 
@@ -68,28 +70,28 @@ function bfgs_Stop(nlp :: AbstractNLPModel;
             @debug "A", ft
         end
         #------------------------------------------
-        
+
         if nbk >= 51 # too small stepsize, abort
             OK = true
             stp.meta.fail_sub_pb = true
         else
             if t!=tw   ∇ft = grad(nlp, xt) end
-            
+
             # Update BFGS approximation.
             B = push!(B, t * d, ∇ft - ∇f)
-            
+
             #move on
             x .= xt
             f = ft
             ∇f .= ∇ft
-            
+
             OK = update_and_stop!(stp, x = x, gx = ∇f, fx=f)
         end
 
         #@show f
         @info log_row(Any[stp.meta.nb_of_stop, f, norm(∇f), t, hp0])
     end
-    
+
     if !stp.meta.optimal
         #@warn "Optimalité non atteinte"
         @warn status(stp,list=true)
@@ -114,10 +116,29 @@ function L_bfgs_Stop(nlp     :: AbstractNLPModel;
     @debug "U_Solver = L_bfgs"
     n = nlp.meta.nvar
     B₀ =  InverseLBFGSOperator(Float64, n, mem=mem, scaling=scaling)
-    
+
     return bfgs_Stop(nlp; x=x, stp = stp, scaling=scaling, B₀=B₀, kwargs...)
 end
 
+
+
+""" Compact L-BFGS wrapper of the gereral BFGS implementation.
+"""
+function C_bfgs_Stop(nlp     :: AbstractNLPModel;
+                     x       :: Vector{T}=copy(nlp.meta.x0),
+                     stp :: NLPStopping = NLPStopping(nlp,
+                                                      NLPAtX(nlp.meta.x0)),
+                     mem     :: Int = 5,
+                     scaling :: Bool = true,
+                     kwargs...
+                     ) where T
+
+    @debug "U_Solver = C_bfgs"
+    n = nlp.meta.nvar
+    B₀ =  CompactInverseBFGSOperator(Float64, n, mem=mem, scaling=scaling)
+
+    return bfgs_Stop(nlp; x=x, stp = stp, scaling=scaling, B₀=B₀, kwargs...)
+end
 
 
 """ M-BFGS wrapper of the gereral BFGS implementation. M == Matrix
@@ -133,7 +154,7 @@ function M_bfgs_Stop(nlp     :: AbstractNLPModel;
     @debug "U_Solver = M_bfgs"
     n = nlp.meta.nvar
     B₀ =  InverseBFGSOperator(Float64, n, scaling=scaling)
-    
+
     return bfgs_Stop(nlp; x=x, stp = stp, scaling=scaling, B₀=B₀, kwargs...)
 end
 

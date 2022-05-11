@@ -1,4 +1,4 @@
-export bfgs_StopLS, L_bfgs_StopLS, M_bfgs_StopLS, Ch_bfgs_StopLS
+export bfgs_StopLS, L_bfgs_StopLS, M_bfgs_StopLS, Ch_bfgs_StopLS, C_bfgs_Stop
 
 include("AcceptAll.jl")
 
@@ -6,7 +6,7 @@ include("AcceptAll.jl")
     The initial B₀ may be a matrix, an identity or a operator.
     Using the operator implements L-BFGS
     kwargs may specify options for the line search.
-"""  
+"""
 function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
                      x         :: S = copy(nlp.meta.x0),
                      stp       :: NLPStopping = NLPStopping(nlp,
@@ -20,7 +20,7 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
                                         Nothing}              = nothing,
                      kwargs...      # eventually options for the line search
                      ) where {T, S}
-    
+
     @info log_header([:iter, :f, :dual, :step, :nBtrk], [Int, T, T, T, T],
                      hdr_override=Dict(:f=>"f(x)", :dual=>"‖∇f‖"))
 
@@ -47,12 +47,12 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
     #end
 
     # TO DO: systematically convert to an operator (encapsulate matrices)
-    
+
     stp.stopping_user_struct["BFGS"] = B
 
     τ₀ = 0.0005
     τ₁ = 0.9999
-    
+
 #    ϕ, ϕstp = prepare_LS(stp, x, ∇f, τ₀, f, ∇f)
 
     OK = update_and_start!(stp, x = x, fx = f, gx = ∇f)
@@ -68,7 +68,7 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
         reset!(ϕ)
         t, xt, ft, ∇ft = linesearch(ϕ, ϕstp, x, d, f, ∇f, τ₀, τ₁, logger = LS_logger, algo = LS_algo; kwargs...)
         fail_sub_pb = ~ϕstp.meta.optimal
-                
+
         if fail_sub_pb
             OK = true
             stp.meta.fail_sub_pb = true
@@ -78,24 +78,24 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
             # Update BFGS approximation.
             B = push!(B, t * d, ∇ft - ∇f)
             #B = push!(B, t * d, ∇ft - ∇f, scaling)
-            
+
             #move on
             x .= xt
             f = ft
             ∇f .= ∇ft
-            
+
             OK = update_and_stop!(stp, x = x, gx = ∇f, fx = f)
         end
         norm∇f = stp.current_state.current_score
         #@show f
         @info log_row(Any[stp.meta.nb_of_stop, f, norm(∇f), t, ϕ.counters.neval_obj])
     end
-    
+
     if !stp.meta.optimal
         @warn status(stp,list=true)
         @debug x
     end
-    
+
     #return tuple(stp, B)
     return stp
 end
@@ -117,7 +117,27 @@ function L_bfgs_StopLS(nlp :: AbstractNLPModel{T, S};
     @debug "U_Solver = L_bfgs_StopLS"
     n = nlp.meta.nvar
     B₀ =  InverseLBFGSOperator(Float64, n, mem=mem, scaling=scaling)
-    
+
+    return bfgs_StopLS(nlp; x=x, stp=stp, scaling=scaling, LS_logger=LS_logger, LS_algo=LS_algo, B₀=B₀, kwargs...)
+end
+
+""" Compact L-BFGS wrapper of the gereral BFGS implementation.
+"""
+function C_bfgs_StopLS(nlp :: AbstractNLPModel{T, S};
+                       x :: S = copy(nlp.meta.x0),
+                       stp :: NLPStopping = NLPStopping(nlp,
+                                                        NLPAtX(nlp.meta.x0)),
+                       mem :: Int = 5,
+                       scaling :: Bool = true,
+                       LS_algo   :: Function = bracket_B,
+                       LS_logger :: AbstractLogger = Logging.NullLogger(),
+                       kwargs...      # eventually options for the line search
+                       ) where {T, S}
+
+    @debug "U_Solver = C_bfgs_StopLS"
+    n = nlp.meta.nvar
+    B₀ = CompactInverseBFGSOperator(Float64, n, mem=mem, scaling=scaling)
+
     return bfgs_StopLS(nlp; x=x, stp=stp, scaling=scaling, LS_logger=LS_logger, LS_algo=LS_algo, B₀=B₀, kwargs...)
 end
 
@@ -136,7 +156,7 @@ function M_bfgs_StopLS(nlp :: AbstractNLPModel;
     @debug "U_Solver = M_bfgs_StopLS"
     n = nlp.meta.nvar
     B₀ =  InverseBFGSOperator(Float64, n, scaling=scaling)
-    
+
     return bfgs_StopLS(nlp; x=x, stp=stp, scaling=scaling, LS_logger=LS_logger, LS_algo=LS_algo, B₀=B₀, kwargs...)
 end
 
@@ -153,13 +173,13 @@ function Ch_bfgs_StopLS(nlp :: AbstractNLPModel;
                        ) where T
 
     @debug "U_Solver = Ch_bfgs_StopLS"
-    
+
     n = nlp.meta.nvar
 
     B₀ = ChBFGSOperator(Float64, n; scaling = scaling);
-    
+
     return bfgs_StopLS(nlp; x=x, stp=stp, scaling=scaling, LS_logger=LS_logger, LS_algo=LS_algo, B₀=B₀, kwargs...)
 end
 
 
- 
+

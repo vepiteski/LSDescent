@@ -1,7 +1,7 @@
 using Pkg
 Pkg.activate(".")
 
-# Ce script utilise plutôt des fichiers locaux... 
+# Ce script utilise plutôt des fichiers locaux...
 #using LSDescent
 
 using NLPModels, JuMP,  NLPModelsJuMP
@@ -15,10 +15,10 @@ function test_algo(algo::Function, nlp, B, maxiter )
 
     #logger = Logging.ConsoleLogger(stderr,Logging.Warn)
     logger = Logging.NullLogger()
-    Logging.with_logger(logger) do 
+    Logging.with_logger(logger) do
         iter, f, normg, B, x = algo(nlp, B₀ = B, maxiter = maxiter, Lp = Inf)
         @show iter, f, normg, B.nprod
-        @show norm(grad(nlp, x), Inf) 
+        @show norm(grad(nlp, x), Inf)
     end
 
 end
@@ -28,11 +28,11 @@ function test_algo_stp(algo::Function, nlp, stp, B )
 
     #logger = Logging.ConsoleLogger(stderr,Logging.Warn)
     logger = Logging.NullLogger()
-    Logging.with_logger(logger) do 
+    Logging.with_logger(logger) do
         stp = algo(nlp, stp=stp,  B₀ = B)
         iter, f, normg =  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score
         @show iter, f, normg, stp.stopping_user_struct["BFGS"].nprod, status(stp, list=true)
-        @show norm(grad(nlp, stp.current_state.x), Inf) 
+        @show norm(grad(nlp, stp.current_state.x), Inf)
     end
 
 end
@@ -42,7 +42,7 @@ function test_wrapper_stp(algo::Function, nlp, stp; kwargs... )
 
     #logger = Logging.ConsoleLogger(stderr,Logging.Warn)
     logger = Logging.NullLogger()
-    Logging.with_logger(logger) do 
+    Logging.with_logger(logger) do
         stp = algo(nlp, stp=stp; kwargs...)
         iter, f, normg =  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score
         @show iter, f, normg,stp.meta.optimal
@@ -60,16 +60,11 @@ using OptimizationProblems
 #include("woods.jl")
 #include("genrose.jl")
 #nlp = MathOptNLPModel(PureJuMP.dixmaank(40), name="dixmaank")
-nlp = MathOptNLPModel(PureJuMP.dixmaang(100), name="dixmaang")
+#nlp = MathOptNLPModel(PureJuMP.dixmaang(100), name="dixmaang")
 #nlp = MathOptNLPModel(PureJuMP.srosenbr(80), name="srosenbr")
-#nlp = MathOptNLPModel(PureJuMP.woods(80), name="woods")
+nlp = MathOptNLPModel(PureJuMP.woods(80), name="woods")
 #nlp = MathOptNLPModel(PureJuMP.genrose(80), name="genrose")
 
-include("genQuad.jl")
-
-using QuadraticModels
-#H, c, xopt = genQuad(400, 1e10, 1e-3)
-#nlp = QuadraticModel(c, H)
 
 n = nlp.meta.nvar
 
@@ -96,8 +91,8 @@ println()
 reinit!(stp)
 
 let scaling = scaling, n=n
-    include("FormuleChOp.jl")
     include("TypeChol.jl")
+    include("FormuleChOp.jl")
 
     test_wrapper_stp(Ch_bfgs_Stop, nlp, stp; scaling = scaling )
     @show nlp.counters
@@ -123,7 +118,7 @@ let scaling = scaling, n=n
 
     B = InverseBFGSOperator(Float64, n; scaling = scaling)
     reinit!(stp)
-    
+
     test_algo_stp(bfgs_StopLS, nlp, stp, B )
     @show nlp.counters
 end
@@ -145,10 +140,26 @@ reinit!(stp)
 test_algo_stp(bfgs_StopLS, nlp, stp, B)
 @show nlp.counters
 
+
+println()
+@info "Version Compact L-BFGS"
+
+reinit!(stp)
+
+test_wrapper_stp(C_bfgs_Stop, nlp, stp; mem = mem, scaling = scaling )
+@show nlp.counters
+
+B = CompactInverseBFGSOperator(Float64, n, mem=mem; scaling = scaling)
+reinit!(stp)
+
+test_algo_stp(bfgs_StopLS, nlp, stp, B)
+@show nlp.counters
+
+
 using LBFGSB
 include("wrapper.jl")
 
-# 
+#
 println()
 @info "Version L-BFGS-B Fortran"
 

@@ -11,7 +11,7 @@ stp.meta.optimality_check = my_unconstrained_check
 
 #stp.meta.optimality_check = unconstrained_check
 stp.meta.max_iter = maxiter
-stp.meta.rtol = 0  
+stp.meta.rtol = 0
 
 using OneDmin
 
@@ -20,10 +20,10 @@ function test_Stp(algo::Function, nlp; kwargs...) where T
 
     stats = @timed bidon=0
     logger = Logging.ConsoleLogger(stderr,Logging.Warn)
-    Logging.with_logger(logger) do 
+    Logging.with_logger(logger) do
         stats = @timed stp = algo(nlp; kwargs...)
     end
-        
+
     return stats, stp
 end
 
@@ -34,10 +34,10 @@ function test_noStp(algo::Function, nlp; kwargs...) where T
     f=0.0
     normg=0.0
     logger = Logging.ConsoleLogger(stderr,Logging.Warn)
-    Logging.with_logger(logger) do 
+    Logging.with_logger(logger) do
         stats = @timed iter, f, normg, B = algo(nlp; kwargs...)
     end
-        
+
     return stats, iter, f, normg
 end
 
@@ -156,6 +156,25 @@ stats, stp = test_Stp(L_bfgs_Stop, nlp, stp=stp, mem = mem)
 @test stp.current_state.current_score < 1e-6
 
 
+
+println("\n Compact L-bfgs   ")
+
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(C_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, mem = mem)
+
+@info log_row(Any["C-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(C_bfgs_Stop, nlp, stp=stp, mem = mem)
+
+@info log_row(Any["C-bfgsS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
 #reset!(nlp)
 #
 #stats, iter, f, g = test_noStp(L_bfgs, nlp, scaling = true, maxiter = maxiter, Lp = Inf, mem = mem)
@@ -229,6 +248,14 @@ reinit!(stp)
 stats, stp = test_Stp(L_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, mem = mem, scaling = false)
 
 @info log_row(Any["L-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
+@test stp.current_state.current_score < 1e-6
+
+reset!(nlp)
+reinit!(stp)
+
+stats, stp = test_Stp(C_bfgs_StopLS, nlp, stp=stp, LS_algo=bracket_B, mem = mem, scaling = false)
+
+@info log_row(Any["C-bfgsSLS", stats.time,  stp.meta.nb_of_stop, stp.current_state.fx, stp.current_state.current_score])
 @test stp.current_state.current_score < 1e-6
 
 
