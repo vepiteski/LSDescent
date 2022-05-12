@@ -34,7 +34,7 @@ function CompactInverseBFGSData(
         zeros(n, mem),                        # S matrix
         zeros(n, mem),                        # Y matrix
         zeros(mem, mem),                      # R matrix
-        Diagonal{T}(zeros(mem)),          # D matrix
+        Diagonal{T}(zeros(mem)),              # D matrix
         zeros(mem, mem),                      # YtY matrix
         zeros(n,0),                           # SR
         zeros(Int, 0)                         # indices
@@ -185,7 +185,7 @@ function push!(
     compute_indices!(indices, k, mem)
     iEnd = indices[end]
 
-    # Update S and Y matricesk
+    # Update S and Y matrices
     S[:, iEnd] .= s
     Y[:, iEnd] .= y
 
