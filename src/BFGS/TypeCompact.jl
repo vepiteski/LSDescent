@@ -14,7 +14,8 @@ mutable struct CompactInverseBFGSData{T,I<:Integer}
     S::AbstractArray{T}
     Y::AbstractArray{T}
     R::AbstractArray{T}
-    Q::AbstractArray{T}
+    D::Diagonal{T}
+    YtY::AbstractArray{T}
     SR::AbstractArray{T}
     indices::AbstractVector{I}
 end
@@ -33,7 +34,8 @@ function CompactInverseBFGSData(
         zeros(n, mem),                        # S matrix
         zeros(n, mem),                        # Y matrix
         zeros(mem, mem),                      # R matrix
-        zeros(mem, mem),                      # D + scaling * YtY matrix
+        Diagonal{T}(zeros(mem)),              # D matrix
+        zeros(mem, mem),                      # YtY matrix
         zeros(n,0),                           # SR
         zeros(Int, 0)                         # indices
     )
@@ -110,7 +112,8 @@ function CompactInverseBFGSOperator(T::DataType, n::I; kwargs...) where {I<:Inte
         # Multiply operator with a vector.
         compute_inner_prod!(q, scaling_factor, SR,
                             view(data.Y, :, indices),
-                            view(data.Q, indices, indices),
+                            view(data.D, indices, indices),
+                            view(data.YtY, indices, indices),
                             x)
 
         if βm == zero(T2)
@@ -130,13 +133,15 @@ CompactInverseBFGSOperator(n::Int; kwargs...) = CompactInverseBFGSOperator(Float
     Simple function that returns a vector containing the dot product between
     x and each columns of matrix mat
 """
-function compute_inner_prod!(res, scaling_factor, SR, Y, Q, x)
-    res .= x
+function compute_inner_prod!(q, scaling_factor, SR, Y, D, YtY, x)
     SRx = (SR') * x
-    res .-= SR * (Y' * x)
-    res .-= Y * SRx
-    res .*= scaling_factor
-    res .+= (SR * (Q * SRx))
+
+    q .= x
+    q .-= SR * (Y' * x)
+    q .-= Y * SRx
+    q .*= scaling_factor
+
+    q .+= (SR * ((D + scaling_factor*YtY) * SRx))
 end
 
 function compute_indices!(indices, k::Int, m::Int)
@@ -160,14 +165,21 @@ function push!(
     y::Vector{T},
 ) where {T,I,F1,F2,F3}
 
-    if (y' * s) <= eps(T)
+    ys = dot(y, s)
+
+    if ys <= eps(eltype(op))
         return op
     end
 
-    (; S, Y, R, Q, SR, scaling, scaling_factor, mem, k, indices) = op.data
+    (; S, Y, R, D, YtY, SR, scaling, scaling_factor, mem, k, indices) = op.data
 
     # update iteration number
     k = k + 1
+
+    # Update scaling factor
+    if scaling
+        scaling_factor = ys / dot(y, y)
+    end
 
     # Get indices to have right view
     compute_indices!(indices, k, mem)
@@ -180,28 +192,28 @@ function push!(
     # Update Lower triangular matrix R
     fill!(view(R, iEnd, :), 0)
 
-    # Update D + scaling_factor * YtY matrix
+    # Update R matrix and YtY matrix
     for i in indices[1:end-1]
         R[i, iEnd] = dot(y, S[:, i])
-        Q[iEnd, i] = scaling_factor * dot(y, Y[:, i])
-        Q[i, iEnd] = Q[iEnd, i]
+        YtY[iEnd, i] = dot(y, Y[:, i])
+        YtY[i, iEnd] = YtY[iEnd, i]
     end
 
-    Q[iEnd, iEnd] = scaling_factor * dot(y, y) + dot(s, y)
-    R[iEnd, iEnd] = dot(y, s)
+    YtY[iEnd, iEnd] = dot(y, y)
+    R[iEnd, iEnd] = ys
+
+    # Update D matrix
+    D[iEnd, iEnd] = ys
 
     # Compute S * inv(R)'
     SR = view(S, :, indices) *
          inv(UpperTriangular(view(R, indices, indices)))'
 
-    # Update scaling factor
-    if scaling
-        scaling_factor = dot(s, y) / dot(y, y)
-    end
 
     op.data.k = k
     op.data.SR = SR
     op.data.indices = indices
+    op.data.scaling_factor = scaling_factor
     return op
 end
 
