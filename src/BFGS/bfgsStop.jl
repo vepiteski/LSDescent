@@ -135,7 +135,7 @@ function C_bfgs_Stop(nlp     :: AbstractNLPModel;
 
     @debug "U_Solver = C_bfgs"
     n = nlp.meta.nvar
-    B₀ =  CompactInverseBFGSOperator(Float64, n, mem=mem, scaling=scaling)
+    B₀ = CompactInverseBFGSOperator(Float64, n, mem=mem, scaling=scaling)
 
     return bfgs_Stop(nlp; x=x, stp = stp, scaling=scaling, B₀=B₀, kwargs...)
 end

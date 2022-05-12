@@ -61,14 +61,15 @@ using OptimizationProblems
 #include("genrose.jl")
 #nlp = MathOptNLPModel(PureJuMP.dixmaank(40), name="dixmaank")
 #nlp = MathOptNLPModel(PureJuMP.dixmaang(100), name="dixmaang")
-#nlp = MathOptNLPModel(PureJuMP.srosenbr(80), name="srosenbr")
-nlp = MathOptNLPModel(PureJuMP.woods(80), name="woods")
+nlp = MathOptNLPModel(PureJuMP.srosenbr(80), name="srosenbr")
+#nlp = MathOptNLPModel(PureJuMP.woods(80), name="woods")
 #nlp = MathOptNLPModel(PureJuMP.genrose(80), name="genrose")
 
 
 n = nlp.meta.nvar
 
 include("Type.jl")
+include("TypeCompact.jl")
 include("AcceptAll.jl")
 
 maxiter = 1600
