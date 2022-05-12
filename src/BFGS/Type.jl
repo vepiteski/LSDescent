@@ -15,7 +15,7 @@ function BFGSData(
     scaling :: Bool = true ) where {T}
 
     n,  = size(M₀) # add checks for square symmetric matrix
-    
+
     BFGSData{T}(M₀, scaling, Vector{T}(undef, n))
 end
 
@@ -60,16 +60,17 @@ BFGSOperator{T}(
     0,
 )
 
-import LinearOperators:has_args5, use_prod5!, isallocated5
+import LinearOperators:has_args5, use_prod5!, isallocated5, storage_type
 has_args5(op::BFGSOperator) = true
 use_prod5!(op::BFGSOperator) = true
 isallocated5(op::BFGSOperator) = true
+storage_type(op::BFGSOperator{T}) where {T} = Vector{T}
 
 
 """
     InverseBFGSOperator(M₀, n [; scaling=true])
     InverseBFGSOperator(n, [; scaling=true])
-Construct a BFGS approximation in inverse form. 
+Construct a BFGS approximation in inverse form.
 """
 function InverseBFGSOperator(M :: Matrix{T}, n :: Int; kwargs...) where {T <: Real}
     kwargs = Dict(kwargs)
@@ -94,7 +95,7 @@ function InverseBFGSOperator(M :: Matrix{T}, n :: Int; kwargs...) where {T <: Re
 
         return res
     end
-    
+
     prod! = @closure (res, x, α, β) -> bfgs_multiply(res, bfgs_data, x, α, β)
     return BFGSOperator{T}(n, n, true, true, prod!, prod!, prod!, bfgs_data)
 end

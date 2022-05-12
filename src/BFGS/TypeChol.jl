@@ -14,7 +14,7 @@ function ChBFGSData(
 
     n,  = size(M₀) # add checks for square symmetric matrix ≻ 0
     C₀ = cholesky(M₀)
-    
+
     ChBFGSData{T}(C₀, scaling, Vector{T}(undef, n))
 end
 
@@ -59,17 +59,18 @@ ChBFGSOperator{T}(
     0,
 )
 
-import LinearOperators:has_args5, use_prod5!, isallocated5
+import LinearOperators:has_args5, use_prod5!, isallocated5, storage_type
 has_args5(op::ChBFGSOperator) = true
 use_prod5!(op::ChBFGSOperator) = true
 isallocated5(op::ChBFGSOperator) = true
+storage_type(op::ChBFGSOperator{T}) where {T} = Vector{T}
 
 
 
 """
     InverseBFGSOperator(M₀, n [; scaling=true])
     InverseBFGSOperator(n, [; scaling=true])
-Construct a BFGS approximation in inverse form. 
+Construct a BFGS approximation in inverse form.
 """
 function ChBFGSOperator(M :: Matrix{T}, n :: Int; kwargs...) where {T <: Real}
     kwargs = Dict(kwargs)
@@ -95,7 +96,7 @@ function ChBFGSOperator(M :: Matrix{T}, n :: Int; kwargs...) where {T <: Real}
 
         return res
     end
-    
+
     prod! = @closure (res, x, α, β) -> Chbfgs_multiply(res, Ch_bfgs_data, x, α, β)
     return ChBFGSOperator{T}(n, n, true, true, prod!, prod!, prod!, Ch_bfgs_data)
 end

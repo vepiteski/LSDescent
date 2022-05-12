@@ -1,4 +1,4 @@
-export bfgs_StopLS, L_bfgs_StopLS, M_bfgs_StopLS, Ch_bfgs_StopLS, C_bfgs_Stop
+export bfgs_StopLS, L_bfgs_StopLS, M_bfgs_StopLS, Ch_bfgs_StopLS, C_bfgs_StopLS
 
 include("AcceptAll.jl")
 
