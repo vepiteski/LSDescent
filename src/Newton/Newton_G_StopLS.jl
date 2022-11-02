@@ -23,8 +23,8 @@ function Newton_G_StopLS(nlp :: AbstractNLPModel;
 
     OK = update_and_start!(stp, x = x, fx = f, gx = ∇f)
 
-    τ₀ = 0.0005
-    τ₁ = 0.9999
+    τ₀ = T(0.0005)
+    τ₁ = T(0.9999)
     d = similar(x)
     ϕ, ϕstp = prepare_LS(stp, x, d, τ₀, f, ∇f)
 
