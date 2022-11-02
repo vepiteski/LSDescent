@@ -25,7 +25,7 @@ function Newton_G_StopLS(nlp :: AbstractNLPModel;
 
     τ₀ = T(0.0005)
     τ₁ = T(0.9999)
-    d = similar(x)
+    d = 0*x # dummy, to instantiate internal data in LS
     ϕ, ϕstp = prepare_LS(stp, x, d, τ₀, f, ∇f)
 
     @info log_row(Any[0, f, norm(∇f)])
