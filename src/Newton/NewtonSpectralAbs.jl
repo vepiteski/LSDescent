@@ -2,7 +2,7 @@ export NwtdirectionSpectral, NewtonSpectralAbs, NewtonSpectralAbsLS
 
 function NwtdirectionSpectral(H, ∇f; scale_abs :: Bool = true,
                               γ = 1e-6)
-    Δ, O = eigen(H)
+    Δ, O = eigen(Hermitian(H))
     # devise an adaptative value for γ ? akin to Levenberg-Marquardt?
     n = length(Δ)
     if scale_abs   
