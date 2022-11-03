@@ -116,7 +116,7 @@ function L_bfgs_StopLS(nlp :: AbstractNLPModel{T, S};
 
     @debug "U_Solver = L_bfgs_StopLS"
     n = nlp.meta.nvar
-    B₀ =  InverseLBFGSOperator(Float64, n, mem=mem, scaling=scaling)
+    B₀ =  InverseLBFGSOperator(T, n, mem=mem, scaling=scaling)
 
     return bfgs_StopLS(nlp; x=x, stp=stp, scaling=scaling, LS_logger=LS_logger, LS_algo=LS_algo, B₀=B₀, kwargs...)
 end
