@@ -50,8 +50,8 @@ function bfgs_StopLS(nlp       :: AbstractNLPModel{T, S};
 
     stp.stopping_user_struct["BFGS"] = B
 
-    τ₀ = 0.0005
-    τ₁ = 0.9999
+    τ₀ = T(0.0005)
+    τ₁ = T(0.9999)
 
 #    ϕ, ϕstp = prepare_LS(stp, x, ∇f, τ₀, f, ∇f)
 
